@@ -4997,6 +4997,7 @@ void main() {
             height: containerHeight,
             child: DropdownButtonFormField<int>(
               isExpanded: true,
+              isVerticallyExpanded: true,
               items: const <DropdownMenuItem<int>>[DropdownMenuItem<int>(value: 1, child: Text('Option 1'))],
               onChanged: (_) {},
             ),
