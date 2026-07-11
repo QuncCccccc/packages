@@ -314,6 +314,9 @@ abstract class CupertinoLocalizations {
   /// The label for the back button, used in [CupertinoNavigationBar] and [CupertinoSliverNavigationBar].
   String get backButtonLabel;
 
+  /// A test message for testing purposes.
+  String get testMessage;
+
   /// The semantics hint to describe the tap action on an expanded
   /// [CupertinoExpansionTile] on iOS and macOS. This is appended to the [collapsedHint]
   /// hint to provide a more detailed description of the action, e.g. "Expanded
@@ -579,6 +582,9 @@ class DefaultCupertinoLocalizations implements CupertinoLocalizations {
 
   @override
   String get collapsedHint => 'Expanded';
+
+  @override
+  String get testMessage => 'Test message';
 
   /// Creates an object that provides US English resource values for the
   /// cupertino library widgets.
