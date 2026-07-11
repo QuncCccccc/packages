@@ -220,6 +220,9 @@ abstract class MaterialLocalizations {
   /// [scrimOnTapHint].
   String get bottomSheetLabel;
 
+  /// Label to test adding new strings in material_ui.
+  String get testMessage;
+
   /// Hint text announced when tapping on the scrim underneath the content of
   /// a modal route.
   String scrimOnTapHint(String modalRouteContentName);
@@ -1014,6 +1017,9 @@ class DefaultMaterialLocalizations implements MaterialLocalizations {
 
   @override
   String get inputTimeModeButtonLabel => 'Switch to text input mode';
+
+  @override
+  String get testMessage => 'Test';
 
   String _formatDayPeriod(TimeOfDay timeOfDay) {
     return switch (timeOfDay.period) {

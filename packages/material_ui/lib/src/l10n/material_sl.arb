@@ -152,5 +152,6 @@
   "searchWebButtonLabel": "Iskanje v spletu",
   "shareButtonLabel": "Deli",
   "clearButtonTooltip": "Počisti besedilo",
-  "selectedDateLabel": "Izbrano"
+  "selectedDateLabel": "Izbrano",
+  "testMessage": "Test"
 }

@@ -780,5 +780,10 @@
   "keyboardKeySpace": "Space",
   "@keyboardKeySpace": {
     "description": "Part of a keyboard shortcut label for the keyboard key 'Space' (space) to be displayed in an application menu next to the menu item that this keyboard key triggers.  Should be as short as possible, using standard computer keyboard symbols/terminology for the key in the locale. This is the space bar key."
+  },
+
+  "testMessage": "Test",
+  "@testMessage": {
+    "description": "This is a temporary  test message."
   }
 }
