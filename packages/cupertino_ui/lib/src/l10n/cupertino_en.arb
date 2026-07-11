@@ -243,5 +243,10 @@
   "collapsedHint": "Expanded",
   "@collapsedHint": {
     "description": "The verb which describes the CupertinoExpansionTile state when a collapsed CupertinoExpansionTile is pressed."
+  },
+
+  "testMessage": "Test message",
+  "@testMessage": {
+    "description": "The temporary test message for decoupling."
   }
 }

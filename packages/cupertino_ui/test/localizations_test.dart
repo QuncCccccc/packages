@@ -46,6 +46,7 @@ void main() {
     expect(localizations.expansionTileCollapsedTapHint, isNotNull);
     expect(localizations.expandedHint, isNotNull);
     expect(localizations.collapsedHint, isNotNull);
+    expect(localizations.testMessage, isNotNull);
   });
 
   testWidgets('CupertinoLocalizations.of throws', (WidgetTester tester) async {

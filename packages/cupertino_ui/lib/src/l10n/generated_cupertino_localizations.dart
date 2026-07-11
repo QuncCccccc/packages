@@ -156,6 +156,9 @@ class CupertinoLocalizationAf extends GlobalCupertinoLocalizations {
   String get tabSemanticsLabelRaw => r'Oortjie $tabIndex van $tabCount';
 
   @override
+  String get testMessage => 'Test message';
+
+  @override
   String? get timerPickerHourLabelFew => null;
 
   @override
@@ -344,6 +347,9 @@ class CupertinoLocalizationAm extends GlobalCupertinoLocalizations {
 
   @override
   String get tabSemanticsLabelRaw => r'ትር $tabIndex ከ$tabCount';
+
+  @override
+  String get testMessage => 'Test message';
 
   @override
   String? get timerPickerHourLabelFew => null;
@@ -536,6 +542,9 @@ class CupertinoLocalizationAr extends GlobalCupertinoLocalizations {
   String get tabSemanticsLabelRaw => r'علامة التبويب $tabIndex من $tabCount';
 
   @override
+  String get testMessage => 'Test message';
+
+  @override
   String? get timerPickerHourLabelFew => 'ساعات';
 
   @override
@@ -724,6 +733,9 @@ class CupertinoLocalizationAs extends GlobalCupertinoLocalizations {
 
   @override
   String get tabSemanticsLabelRaw => r'$tabCount টা টেবৰ $tabIndex নম্বৰটো';
+
+  @override
+  String get testMessage => 'Test message';
 
   @override
   String? get timerPickerHourLabelFew => null;
@@ -916,6 +928,9 @@ class CupertinoLocalizationAz extends GlobalCupertinoLocalizations {
   String get tabSemanticsLabelRaw => r'Tab $tabIndex/$tabCount';
 
   @override
+  String get testMessage => 'Test message';
+
+  @override
   String? get timerPickerHourLabelFew => null;
 
   @override
@@ -1104,6 +1119,9 @@ class CupertinoLocalizationBe extends GlobalCupertinoLocalizations {
 
   @override
   String get tabSemanticsLabelRaw => r'Укладка $tabIndex з $tabCount';
+
+  @override
+  String get testMessage => 'Test message';
 
   @override
   String? get timerPickerHourLabelFew => 'гадзіны';
@@ -1296,6 +1314,9 @@ class CupertinoLocalizationBg extends GlobalCupertinoLocalizations {
   String get tabSemanticsLabelRaw => r'Раздел $tabIndex от $tabCount';
 
   @override
+  String get testMessage => 'Test message';
+
+  @override
   String? get timerPickerHourLabelFew => null;
 
   @override
@@ -1484,6 +1505,9 @@ class CupertinoLocalizationBn extends GlobalCupertinoLocalizations {
 
   @override
   String get tabSemanticsLabelRaw => r'$tabCount-এর মধ্যে $tabIndex নম্বর ট্যাব';
+
+  @override
+  String get testMessage => 'Test message';
 
   @override
   String? get timerPickerHourLabelFew => null;
@@ -1676,6 +1700,9 @@ class CupertinoLocalizationBo extends GlobalCupertinoLocalizations {
   String get tabSemanticsLabelRaw => r'འཛར་གནོན་ $tabIndex ཡི $tabCount';
 
   @override
+  String get testMessage => 'Test message';
+
+  @override
   String? get timerPickerHourLabelFew => null;
 
   @override
@@ -1864,6 +1891,9 @@ class CupertinoLocalizationBs extends GlobalCupertinoLocalizations {
 
   @override
   String get tabSemanticsLabelRaw => r'Kartica $tabIndex od $tabCount';
+
+  @override
+  String get testMessage => 'Test message';
 
   @override
   String? get timerPickerHourLabelFew => 'sata';
@@ -2056,6 +2086,9 @@ class CupertinoLocalizationCa extends GlobalCupertinoLocalizations {
   String get tabSemanticsLabelRaw => r'Pestanya $tabIndex de $tabCount';
 
   @override
+  String get testMessage => 'Test message';
+
+  @override
   String? get timerPickerHourLabelFew => null;
 
   @override
@@ -2244,6 +2277,9 @@ class CupertinoLocalizationCs extends GlobalCupertinoLocalizations {
 
   @override
   String get tabSemanticsLabelRaw => r'Karta $tabIndex z $tabCount';
+
+  @override
+  String get testMessage => 'Test message';
 
   @override
   String? get timerPickerHourLabelFew => 'hodiny';
@@ -2436,6 +2472,9 @@ class CupertinoLocalizationCy extends GlobalCupertinoLocalizations {
   String get tabSemanticsLabelRaw => r'Tab $tabIndex o $tabCount';
 
   @override
+  String get testMessage => 'Test message';
+
+  @override
   String? get timerPickerHourLabelFew => 'awr';
 
   @override
@@ -2626,6 +2665,9 @@ class CupertinoLocalizationDa extends GlobalCupertinoLocalizations {
   String get tabSemanticsLabelRaw => r'Fane $tabIndex af $tabCount';
 
   @override
+  String get testMessage => 'Test message';
+
+  @override
   String? get timerPickerHourLabelFew => null;
 
   @override
@@ -2814,6 +2856,9 @@ class CupertinoLocalizationDe extends GlobalCupertinoLocalizations {
 
   @override
   String get tabSemanticsLabelRaw => r'Tab $tabIndex von $tabCount';
+
+  @override
+  String get testMessage => 'Test message';
 
   @override
   String? get timerPickerHourLabelFew => null;
@@ -3034,6 +3079,9 @@ class CupertinoLocalizationEl extends GlobalCupertinoLocalizations {
   String get tabSemanticsLabelRaw => r'Καρτέλα $tabIndex από $tabCount';
 
   @override
+  String get testMessage => 'Test message';
+
+  @override
   String? get timerPickerHourLabelFew => null;
 
   @override
@@ -3222,6 +3270,9 @@ class CupertinoLocalizationEn extends GlobalCupertinoLocalizations {
 
   @override
   String get tabSemanticsLabelRaw => r'Tab $tabIndex of $tabCount';
+
+  @override
+  String get testMessage => 'Test message';
 
   @override
   String? get timerPickerHourLabelFew => null;
@@ -3696,6 +3747,9 @@ class CupertinoLocalizationEs extends GlobalCupertinoLocalizations {
 
   @override
   String get tabSemanticsLabelRaw => r'Pestaña $tabIndex de $tabCount';
+
+  @override
+  String get testMessage => 'Test message';
 
   @override
   String? get timerPickerHourLabelFew => null;
@@ -5048,6 +5102,9 @@ class CupertinoLocalizationEt extends GlobalCupertinoLocalizations {
   String get tabSemanticsLabelRaw => r'$tabIndex. vaheleht $tabCount-st';
 
   @override
+  String get testMessage => 'Test message';
+
+  @override
   String? get timerPickerHourLabelFew => null;
 
   @override
@@ -5236,6 +5293,9 @@ class CupertinoLocalizationEu extends GlobalCupertinoLocalizations {
 
   @override
   String get tabSemanticsLabelRaw => r'$tabIndex/$tabCount fitxa';
+
+  @override
+  String get testMessage => 'Test message';
 
   @override
   String? get timerPickerHourLabelFew => null;
@@ -5428,6 +5488,9 @@ class CupertinoLocalizationFa extends GlobalCupertinoLocalizations {
   String get tabSemanticsLabelRaw => r'برگه $tabIndex از $tabCount';
 
   @override
+  String get testMessage => 'Test message';
+
+  @override
   String? get timerPickerHourLabelFew => null;
 
   @override
@@ -5616,6 +5679,9 @@ class CupertinoLocalizationFi extends GlobalCupertinoLocalizations {
 
   @override
   String get tabSemanticsLabelRaw => r'Välilehti $tabIndex kautta $tabCount';
+
+  @override
+  String get testMessage => 'Test message';
 
   @override
   String? get timerPickerHourLabelFew => null;
@@ -5808,6 +5874,9 @@ class CupertinoLocalizationFil extends GlobalCupertinoLocalizations {
   String get tabSemanticsLabelRaw => r'Tab $tabIndex ng $tabCount';
 
   @override
+  String get testMessage => 'Test message';
+
+  @override
   String? get timerPickerHourLabelFew => null;
 
   @override
@@ -5996,6 +6065,9 @@ class CupertinoLocalizationFr extends GlobalCupertinoLocalizations {
 
   @override
   String get tabSemanticsLabelRaw => r'Onglet $tabIndex sur $tabCount';
+
+  @override
+  String get testMessage => 'Test message';
 
   @override
   String? get timerPickerHourLabelFew => null;
@@ -6243,6 +6315,9 @@ class CupertinoLocalizationGa extends GlobalCupertinoLocalizations {
   String get tabSemanticsLabelRaw => r'Cluaisín $tabIndex de $tabCount';
 
   @override
+  String get testMessage => 'Test message';
+
+  @override
   String? get timerPickerHourLabelFew => 'uair an chloig';
 
   @override
@@ -6431,6 +6506,9 @@ class CupertinoLocalizationGl extends GlobalCupertinoLocalizations {
 
   @override
   String get tabSemanticsLabelRaw => r'Pestana $tabIndex de $tabCount';
+
+  @override
+  String get testMessage => 'Test message';
 
   @override
   String? get timerPickerHourLabelFew => null;
@@ -6623,6 +6701,9 @@ class CupertinoLocalizationGsw extends GlobalCupertinoLocalizations {
   String get tabSemanticsLabelRaw => r'Tab $tabIndex von $tabCount';
 
   @override
+  String get testMessage => 'Test message';
+
+  @override
   String? get timerPickerHourLabelFew => null;
 
   @override
@@ -6811,6 +6892,9 @@ class CupertinoLocalizationGu extends GlobalCupertinoLocalizations {
 
   @override
   String get tabSemanticsLabelRaw => r'$tabCountમાંથી $tabIndex ટૅબ';
+
+  @override
+  String get testMessage => 'Test message';
 
   @override
   String? get timerPickerHourLabelFew => null;
@@ -7003,6 +7087,9 @@ class CupertinoLocalizationHe extends GlobalCupertinoLocalizations {
   String get tabSemanticsLabelRaw => r'כרטיסייה $tabIndex מתוך $tabCount';
 
   @override
+  String get testMessage => 'Test message';
+
+  @override
   String? get timerPickerHourLabelFew => null;
 
   @override
@@ -7191,6 +7278,9 @@ class CupertinoLocalizationHi extends GlobalCupertinoLocalizations {
 
   @override
   String get tabSemanticsLabelRaw => r'$tabCount का टैब $tabIndex';
+
+  @override
+  String get testMessage => 'Test message';
 
   @override
   String? get timerPickerHourLabelFew => null;
@@ -7383,6 +7473,9 @@ class CupertinoLocalizationHr extends GlobalCupertinoLocalizations {
   String get tabSemanticsLabelRaw => r'Kartica $tabIndex od $tabCount';
 
   @override
+  String get testMessage => 'Test message';
+
+  @override
   String? get timerPickerHourLabelFew => 'sata';
 
   @override
@@ -7571,6 +7664,9 @@ class CupertinoLocalizationHu extends GlobalCupertinoLocalizations {
 
   @override
   String get tabSemanticsLabelRaw => r'$tabCount/$tabIndex. lap';
+
+  @override
+  String get testMessage => 'Test message';
 
   @override
   String? get timerPickerHourLabelFew => null;
@@ -7763,6 +7859,9 @@ class CupertinoLocalizationHy extends GlobalCupertinoLocalizations {
   String get tabSemanticsLabelRaw => r'Ներդիր $tabIndex՝ $tabCount-ից';
 
   @override
+  String get testMessage => 'Test message';
+
+  @override
   String? get timerPickerHourLabelFew => null;
 
   @override
@@ -7951,6 +8050,9 @@ class CupertinoLocalizationId extends GlobalCupertinoLocalizations {
 
   @override
   String get tabSemanticsLabelRaw => r'Tab $tabIndex dari $tabCount';
+
+  @override
+  String get testMessage => 'Test message';
 
   @override
   String? get timerPickerHourLabelFew => null;
@@ -8143,6 +8245,9 @@ class CupertinoLocalizationIs extends GlobalCupertinoLocalizations {
   String get tabSemanticsLabelRaw => r'Flipi $tabIndex af $tabCount';
 
   @override
+  String get testMessage => 'Test message';
+
+  @override
   String? get timerPickerHourLabelFew => null;
 
   @override
@@ -8331,6 +8436,9 @@ class CupertinoLocalizationIt extends GlobalCupertinoLocalizations {
 
   @override
   String get tabSemanticsLabelRaw => r'Scheda $tabIndex di $tabCount';
+
+  @override
+  String get testMessage => 'Test message';
 
   @override
   String? get timerPickerHourLabelFew => null;
@@ -8523,6 +8631,9 @@ class CupertinoLocalizationJa extends GlobalCupertinoLocalizations {
   String get tabSemanticsLabelRaw => r'タブ: $tabIndex/$tabCount';
 
   @override
+  String get testMessage => 'Test message';
+
+  @override
   String? get timerPickerHourLabelFew => null;
 
   @override
@@ -8711,6 +8822,9 @@ class CupertinoLocalizationKa extends GlobalCupertinoLocalizations {
 
   @override
   String get tabSemanticsLabelRaw => r'ჩანართი $tabIndex / $tabCount-დან';
+
+  @override
+  String get testMessage => 'Test message';
 
   @override
   String? get timerPickerHourLabelFew => null;
@@ -8903,6 +9017,9 @@ class CupertinoLocalizationKk extends GlobalCupertinoLocalizations {
   String get tabSemanticsLabelRaw => r'Қойынды: $tabIndex/$tabCount';
 
   @override
+  String get testMessage => 'Test message';
+
+  @override
   String? get timerPickerHourLabelFew => null;
 
   @override
@@ -9091,6 +9208,9 @@ class CupertinoLocalizationKm extends GlobalCupertinoLocalizations {
 
   @override
   String get tabSemanticsLabelRaw => r'ផ្ទាំងទី $tabIndex នៃ $tabCount';
+
+  @override
+  String get testMessage => 'Test message';
 
   @override
   String? get timerPickerHourLabelFew => null;
@@ -9283,6 +9403,9 @@ class CupertinoLocalizationKn extends GlobalCupertinoLocalizations {
   String get tabSemanticsLabelRaw => '\u{24}\u{74}\u{61}\u{62}\u{43}\u{6f}\u{75}\u{6e}\u{74}\u{20}\u{cb0}\u{cb2}\u{ccd}\u{cb2}\u{cbf}\u{ca8}\u{20}\u{24}\u{74}\u{61}\u{62}\u{49}\u{6e}\u{64}\u{65}\u{78}\u{20}\u{c9f}\u{ccd}\u{caf}\u{cbe}\u{cac}\u{ccd}';
 
   @override
+  String get testMessage => 'Test message';
+
+  @override
   String? get timerPickerHourLabelFew => null;
 
   @override
@@ -9471,6 +9594,9 @@ class CupertinoLocalizationKo extends GlobalCupertinoLocalizations {
 
   @override
   String get tabSemanticsLabelRaw => r'탭 $tabCount개 중 $tabIndex번째';
+
+  @override
+  String get testMessage => 'Test message';
 
   @override
   String? get timerPickerHourLabelFew => null;
@@ -9663,6 +9789,9 @@ class CupertinoLocalizationKy extends GlobalCupertinoLocalizations {
   String get tabSemanticsLabelRaw => r'$tabCount ичинен $tabIndex-өтмөк';
 
   @override
+  String get testMessage => 'Test message';
+
+  @override
   String? get timerPickerHourLabelFew => null;
 
   @override
@@ -9851,6 +9980,9 @@ class CupertinoLocalizationLo extends GlobalCupertinoLocalizations {
 
   @override
   String get tabSemanticsLabelRaw => r'ແຖບທີ $tabIndex ຈາກທັງໝົດ $tabCount';
+
+  @override
+  String get testMessage => 'Test message';
 
   @override
   String? get timerPickerHourLabelFew => null;
@@ -10043,6 +10175,9 @@ class CupertinoLocalizationLt extends GlobalCupertinoLocalizations {
   String get tabSemanticsLabelRaw => r'$tabIndex skirtukas iš $tabCount';
 
   @override
+  String get testMessage => 'Test message';
+
+  @override
   String? get timerPickerHourLabelFew => 'val.';
 
   @override
@@ -10231,6 +10366,9 @@ class CupertinoLocalizationLv extends GlobalCupertinoLocalizations {
 
   @override
   String get tabSemanticsLabelRaw => r'$tabIndex. cilne no $tabCount';
+
+  @override
+  String get testMessage => 'Test message';
 
   @override
   String? get timerPickerHourLabelFew => null;
@@ -10423,6 +10561,9 @@ class CupertinoLocalizationMk extends GlobalCupertinoLocalizations {
   String get tabSemanticsLabelRaw => r'Картичка $tabIndex од $tabCount';
 
   @override
+  String get testMessage => 'Test message';
+
+  @override
   String? get timerPickerHourLabelFew => null;
 
   @override
@@ -10611,6 +10752,9 @@ class CupertinoLocalizationMl extends GlobalCupertinoLocalizations {
 
   @override
   String get tabSemanticsLabelRaw => r'$tabCount ടാബിൽ $tabIndex-ാമത്തേത്';
+
+  @override
+  String get testMessage => 'Test message';
 
   @override
   String? get timerPickerHourLabelFew => null;
@@ -10803,6 +10947,9 @@ class CupertinoLocalizationMn extends GlobalCupertinoLocalizations {
   String get tabSemanticsLabelRaw => r'$tabCount-н $tabIndex-р таб';
 
   @override
+  String get testMessage => 'Test message';
+
+  @override
   String? get timerPickerHourLabelFew => null;
 
   @override
@@ -10991,6 +11138,9 @@ class CupertinoLocalizationMr extends GlobalCupertinoLocalizations {
 
   @override
   String get tabSemanticsLabelRaw => r'$tabCount पैकी $tabIndex टॅब';
+
+  @override
+  String get testMessage => 'Test message';
 
   @override
   String? get timerPickerHourLabelFew => null;
@@ -11183,6 +11333,9 @@ class CupertinoLocalizationMs extends GlobalCupertinoLocalizations {
   String get tabSemanticsLabelRaw => r'Tab $tabIndex daripada $tabCount';
 
   @override
+  String get testMessage => 'Test message';
+
+  @override
   String? get timerPickerHourLabelFew => null;
 
   @override
@@ -11371,6 +11524,9 @@ class CupertinoLocalizationMy extends GlobalCupertinoLocalizations {
 
   @override
   String get tabSemanticsLabelRaw => r'တဘ် $tabCount ခုအနက် $tabIndex ခု';
+
+  @override
+  String get testMessage => 'Test message';
 
   @override
   String? get timerPickerHourLabelFew => null;
@@ -11563,6 +11719,9 @@ class CupertinoLocalizationNb extends GlobalCupertinoLocalizations {
   String get tabSemanticsLabelRaw => r'Fane $tabIndex av $tabCount';
 
   @override
+  String get testMessage => 'Test message';
+
+  @override
   String? get timerPickerHourLabelFew => null;
 
   @override
@@ -11751,6 +11910,9 @@ class CupertinoLocalizationNe extends GlobalCupertinoLocalizations {
 
   @override
   String get tabSemanticsLabelRaw => r'$tabCount मध्ये $tabIndex ट्याब';
+
+  @override
+  String get testMessage => 'Test message';
 
   @override
   String? get timerPickerHourLabelFew => null;
@@ -11943,6 +12105,9 @@ class CupertinoLocalizationNl extends GlobalCupertinoLocalizations {
   String get tabSemanticsLabelRaw => r'Tabblad $tabIndex van $tabCount';
 
   @override
+  String get testMessage => 'Test message';
+
+  @override
   String? get timerPickerHourLabelFew => null;
 
   @override
@@ -12131,6 +12296,9 @@ class CupertinoLocalizationNo extends GlobalCupertinoLocalizations {
 
   @override
   String get tabSemanticsLabelRaw => r'Fane $tabIndex av $tabCount';
+
+  @override
+  String get testMessage => 'Test message';
 
   @override
   String? get timerPickerHourLabelFew => null;
@@ -12323,6 +12491,9 @@ class CupertinoLocalizationOr extends GlobalCupertinoLocalizations {
   String get tabSemanticsLabelRaw => r'$tabCountର $tabIndex ଟାବ';
 
   @override
+  String get testMessage => 'Test message';
+
+  @override
   String? get timerPickerHourLabelFew => null;
 
   @override
@@ -12511,6 +12682,9 @@ class CupertinoLocalizationPa extends GlobalCupertinoLocalizations {
 
   @override
   String get tabSemanticsLabelRaw => r'$tabCount ਵਿੱਚੋਂ $tabIndex ਟੈਬ';
+
+  @override
+  String get testMessage => 'Test message';
 
   @override
   String? get timerPickerHourLabelFew => null;
@@ -12703,6 +12877,9 @@ class CupertinoLocalizationPl extends GlobalCupertinoLocalizations {
   String get tabSemanticsLabelRaw => r'Karta $tabIndex z $tabCount';
 
   @override
+  String get testMessage => 'Test message';
+
+  @override
   String? get timerPickerHourLabelFew => 'godziny';
 
   @override
@@ -12891,6 +13068,9 @@ class CupertinoLocalizationPt extends GlobalCupertinoLocalizations {
 
   @override
   String get tabSemanticsLabelRaw => r'Guia $tabIndex de $tabCount';
+
+  @override
+  String get testMessage => 'Test message';
 
   @override
   String? get timerPickerHourLabelFew => null;
@@ -13153,6 +13333,9 @@ class CupertinoLocalizationRo extends GlobalCupertinoLocalizations {
   String get tabSemanticsLabelRaw => r'Fila $tabIndex din $tabCount';
 
   @override
+  String get testMessage => 'Test message';
+
+  @override
   String? get timerPickerHourLabelFew => 'ore';
 
   @override
@@ -13341,6 +13524,9 @@ class CupertinoLocalizationRu extends GlobalCupertinoLocalizations {
 
   @override
   String get tabSemanticsLabelRaw => r'Вкладка $tabIndex из $tabCount';
+
+  @override
+  String get testMessage => 'Test message';
 
   @override
   String? get timerPickerHourLabelFew => 'часа';
@@ -13533,6 +13719,9 @@ class CupertinoLocalizationSi extends GlobalCupertinoLocalizations {
   String get tabSemanticsLabelRaw => r'ටැබ $tabCount න් $tabIndex';
 
   @override
+  String get testMessage => 'Test message';
+
+  @override
   String? get timerPickerHourLabelFew => null;
 
   @override
@@ -13721,6 +13910,9 @@ class CupertinoLocalizationSk extends GlobalCupertinoLocalizations {
 
   @override
   String get tabSemanticsLabelRaw => r'Karta $tabIndex z $tabCount';
+
+  @override
+  String get testMessage => 'Test message';
 
   @override
   String? get timerPickerHourLabelFew => 'hodiny';
@@ -13913,6 +14105,9 @@ class CupertinoLocalizationSl extends GlobalCupertinoLocalizations {
   String get tabSemanticsLabelRaw => r'Zavihek $tabIndex od $tabCount';
 
   @override
+  String get testMessage => 'Test message';
+
+  @override
   String? get timerPickerHourLabelFew => 'ure';
 
   @override
@@ -14103,6 +14298,9 @@ class CupertinoLocalizationSq extends GlobalCupertinoLocalizations {
   String get tabSemanticsLabelRaw => r'Skeda $tabIndex nga $tabCount';
 
   @override
+  String get testMessage => 'Test message';
+
+  @override
   String? get timerPickerHourLabelFew => null;
 
   @override
@@ -14291,6 +14489,9 @@ class CupertinoLocalizationSr extends GlobalCupertinoLocalizations {
 
   @override
   String get tabSemanticsLabelRaw => r'$tabIndex. картица од $tabCount';
+
+  @override
+  String get testMessage => 'Test message';
 
   @override
   String? get timerPickerHourLabelFew => 'сата';
@@ -14641,6 +14842,9 @@ class CupertinoLocalizationSv extends GlobalCupertinoLocalizations {
   String get tabSemanticsLabelRaw => r'Flik $tabIndex av $tabCount';
 
   @override
+  String get testMessage => 'Test message';
+
+  @override
   String? get timerPickerHourLabelFew => null;
 
   @override
@@ -14829,6 +15033,9 @@ class CupertinoLocalizationSw extends GlobalCupertinoLocalizations {
 
   @override
   String get tabSemanticsLabelRaw => r'Kichupo cha $tabIndex kati ya $tabCount';
+
+  @override
+  String get testMessage => 'Test message';
 
   @override
   String? get timerPickerHourLabelFew => null;
@@ -15021,6 +15228,9 @@ class CupertinoLocalizationTa extends GlobalCupertinoLocalizations {
   String get tabSemanticsLabelRaw => r'தாவல் $tabIndex / $tabCount';
 
   @override
+  String get testMessage => 'Test message';
+
+  @override
   String? get timerPickerHourLabelFew => null;
 
   @override
@@ -15209,6 +15419,9 @@ class CupertinoLocalizationTe extends GlobalCupertinoLocalizations {
 
   @override
   String get tabSemanticsLabelRaw => r'$tabCountలో $tabIndexవ ట్యాబ్';
+
+  @override
+  String get testMessage => 'Test message';
 
   @override
   String? get timerPickerHourLabelFew => null;
@@ -15401,6 +15614,9 @@ class CupertinoLocalizationTh extends GlobalCupertinoLocalizations {
   String get tabSemanticsLabelRaw => r'แท็บที่ $tabIndex จาก $tabCount';
 
   @override
+  String get testMessage => 'Test message';
+
+  @override
   String? get timerPickerHourLabelFew => null;
 
   @override
@@ -15589,6 +15805,9 @@ class CupertinoLocalizationTl extends GlobalCupertinoLocalizations {
 
   @override
   String get tabSemanticsLabelRaw => r'Tab $tabIndex ng $tabCount';
+
+  @override
+  String get testMessage => 'Test message';
 
   @override
   String? get timerPickerHourLabelFew => null;
@@ -15781,6 +16000,9 @@ class CupertinoLocalizationTr extends GlobalCupertinoLocalizations {
   String get tabSemanticsLabelRaw => r'Sekme $tabIndex/$tabCount';
 
   @override
+  String get testMessage => 'Test message';
+
+  @override
   String? get timerPickerHourLabelFew => null;
 
   @override
@@ -15969,6 +16191,9 @@ class CupertinoLocalizationUg extends GlobalCupertinoLocalizations {
 
   @override
   String get tabSemanticsLabelRaw => r'بەتكۈچ $tabIndex جەمئىي $tabCount';
+
+  @override
+  String get testMessage => 'Test message';
 
   @override
   String? get timerPickerHourLabelFew => null;
@@ -16161,6 +16386,9 @@ class CupertinoLocalizationUk extends GlobalCupertinoLocalizations {
   String get tabSemanticsLabelRaw => r'Вкладка $tabIndex з $tabCount';
 
   @override
+  String get testMessage => 'Test message';
+
+  @override
   String? get timerPickerHourLabelFew => 'години';
 
   @override
@@ -16349,6 +16577,9 @@ class CupertinoLocalizationUr extends GlobalCupertinoLocalizations {
 
   @override
   String get tabSemanticsLabelRaw => r'$tabCount میں سے $tabIndex ٹیب';
+
+  @override
+  String get testMessage => 'Test message';
 
   @override
   String? get timerPickerHourLabelFew => null;
@@ -16541,6 +16772,9 @@ class CupertinoLocalizationUz extends GlobalCupertinoLocalizations {
   String get tabSemanticsLabelRaw => r'$tabCount varaqdan $tabIndex';
 
   @override
+  String get testMessage => 'Test message';
+
+  @override
   String? get timerPickerHourLabelFew => null;
 
   @override
@@ -16731,6 +16965,9 @@ class CupertinoLocalizationVi extends GlobalCupertinoLocalizations {
   String get tabSemanticsLabelRaw => r'Thẻ $tabIndex/$tabCount';
 
   @override
+  String get testMessage => 'Test message';
+
+  @override
   String? get timerPickerHourLabelFew => null;
 
   @override
@@ -16919,6 +17156,9 @@ class CupertinoLocalizationZh extends GlobalCupertinoLocalizations {
 
   @override
   String get tabSemanticsLabelRaw => r'第 $tabIndex 个标签，共 $tabCount 个';
+
+  @override
+  String get testMessage => 'Test message';
 
   @override
   String? get timerPickerHourLabelFew => null;
@@ -17308,6 +17548,9 @@ class CupertinoLocalizationZu extends GlobalCupertinoLocalizations {
 
   @override
   String get tabSemanticsLabelRaw => r'Ithebhu $tabIndex kwangu-$tabCount';
+
+  @override
+  String get testMessage => 'Test message';
 
   @override
   String? get timerPickerHourLabelFew => null;

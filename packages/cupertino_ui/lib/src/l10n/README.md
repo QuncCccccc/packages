@@ -3,7 +3,7 @@
 The `.arb` files in this directory contain localized values (primarily strings)
 used by the Cupertino library. The `generated_cupertino_localizations.dart` file
 combines all of the localizations into a single Map that is linked with the rest
-of flutter_localizations package.
+of cupertino_ui package.
 
 If you're looking for information about internationalizing Flutter
 apps in general, see the
