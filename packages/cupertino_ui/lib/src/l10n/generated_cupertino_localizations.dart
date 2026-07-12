@@ -4219,6 +4219,64 @@ class CupertinoLocalizationEsEc extends CupertinoLocalizationEs {
   String get modalBarrierDismissLabel => 'Descartar';
 }
 
+/// The translations for Spanish Castilian, as used in Spain (`es_ES`).
+class CupertinoLocalizationEsEs extends CupertinoLocalizationEs {
+  /// Create an instance of the translation bundle for Spanish Castilian, as used in Spain.
+  ///
+  /// For details on the meaning of the arguments, see [GlobalCupertinoLocalizations].
+  const CupertinoLocalizationEsEs({
+    super.localeName = 'es_ES',
+    required super.fullYearFormat,
+    required super.dayFormat,
+    required super.weekdayFormat,
+    required super.mediumDateFormat,
+    required super.singleDigitHourFormat,
+    required super.singleDigitMinuteFormat,
+    required super.doubleDigitMinuteFormat,
+    required super.singleDigitSecondFormat,
+    required super.decimalFormat,
+  });
+
+  @override
+  String? get datePickerHourSemanticsLabelOne => r'$hour en punto';
+
+  @override
+  String get datePickerHourSemanticsLabelOther => r'$hour en punto';
+
+  @override
+  String get anteMeridiemAbbreviation => 'a.m.';
+
+  @override
+  String get postMeridiemAbbreviation => 'p.m.';
+
+  @override
+  String get lookUpButtonLabel => 'Mirar hacia arriba';
+
+  @override
+  String get shareButtonLabel => 'Compartir…';
+
+  @override
+  String get noSpellCheckReplacementsLabel => 'No se encontraron reemplazos';
+
+  @override
+  String get modalBarrierDismissLabel => 'Descartar';
+
+  @override
+  String get menuDismissLabel => 'Descartar menú';
+
+  @override
+  String get expansionTileExpandedHint => 'presiona dos veces para contraer';
+
+  @override
+  String get expansionTileCollapsedHint => 'presiona dos veces para expandir';
+
+  @override
+  String get expansionTileCollapsedTapHint => 'Expandir para ver más detalles';
+
+  @override
+  String get collapsedHint => 'Expandido';
+}
+
 /// The translations for Spanish Castilian, as used in Guatemala (`es_GT`).
 class CupertinoLocalizationEsGt extends CupertinoLocalizationEs {
   /// Create an instance of the translation bundle for Spanish Castilian, as used in Guatemala.
@@ -17489,7 +17547,7 @@ final Set<String> kCupertinoSupportedLanguages = HashSet<String>.from(const <Str
 ///  * `de` - German (plus one country variation)
 ///  * `el` - Modern Greek
 ///  * `en` - English (plus 8 country variations)
-///  * `es` - Spanish Castilian (plus 20 country variations)
+///  * `es` - Spanish Castilian (plus 21 country variations)
 ///  * `et` - Estonian
 ///  * `eu` - Basque
 ///  * `fa` - Persian
@@ -17646,6 +17704,8 @@ GlobalCupertinoLocalizations? getCupertinoTranslation(
           return CupertinoLocalizationEsDo(fullYearFormat: fullYearFormat, dayFormat: dayFormat, weekdayFormat: weekdayFormat, mediumDateFormat: mediumDateFormat, singleDigitHourFormat: singleDigitHourFormat, singleDigitMinuteFormat: singleDigitMinuteFormat, doubleDigitMinuteFormat: doubleDigitMinuteFormat, singleDigitSecondFormat: singleDigitSecondFormat, decimalFormat: decimalFormat);
         case 'EC':
           return CupertinoLocalizationEsEc(fullYearFormat: fullYearFormat, dayFormat: dayFormat, weekdayFormat: weekdayFormat, mediumDateFormat: mediumDateFormat, singleDigitHourFormat: singleDigitHourFormat, singleDigitMinuteFormat: singleDigitMinuteFormat, doubleDigitMinuteFormat: doubleDigitMinuteFormat, singleDigitSecondFormat: singleDigitSecondFormat, decimalFormat: decimalFormat);
+        case 'ES':
+          return CupertinoLocalizationEsEs(fullYearFormat: fullYearFormat, dayFormat: dayFormat, weekdayFormat: weekdayFormat, mediumDateFormat: mediumDateFormat, singleDigitHourFormat: singleDigitHourFormat, singleDigitMinuteFormat: singleDigitMinuteFormat, doubleDigitMinuteFormat: doubleDigitMinuteFormat, singleDigitSecondFormat: singleDigitSecondFormat, decimalFormat: decimalFormat);
         case 'GT':
           return CupertinoLocalizationEsGt(fullYearFormat: fullYearFormat, dayFormat: dayFormat, weekdayFormat: weekdayFormat, mediumDateFormat: mediumDateFormat, singleDigitHourFormat: singleDigitHourFormat, singleDigitMinuteFormat: singleDigitMinuteFormat, doubleDigitMinuteFormat: doubleDigitMinuteFormat, singleDigitSecondFormat: singleDigitSecondFormat, decimalFormat: decimalFormat);
         case 'HN':

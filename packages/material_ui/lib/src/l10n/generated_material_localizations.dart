@@ -11247,6 +11247,196 @@ class MaterialLocalizationEsEc extends MaterialLocalizationEs {
   String get collapsedIconTapHint => 'Expandir';
 }
 
+/// The translations for Spanish Castilian, as used in Spain (`es_ES`).
+class MaterialLocalizationEsEs extends MaterialLocalizationEs {
+  /// Create an instance of the translation bundle for Spanish Castilian, as used in Spain.
+  ///
+  /// For details on the meaning of the arguments, see [GlobalMaterialLocalizations].
+  const MaterialLocalizationEsEs({
+    super.localeName = 'es_ES',
+    required super.fullYearFormat,
+    required super.compactDateFormat,
+    required super.shortDateFormat,
+    required super.mediumDateFormat,
+    required super.longDateFormat,
+    required super.yearMonthFormat,
+    required super.shortMonthDayFormat,
+    required super.decimalFormat,
+    required super.twoDigitZeroPaddedFormat,
+  });
+
+  @override
+  String get openAppDrawerTooltip => 'Abrir menú de navegación';
+
+  @override
+  String get deleteButtonTooltip => 'Borrar';
+
+  @override
+  String get nextMonthTooltip => 'Próximo mes';
+
+  @override
+  String get nextPageTooltip => 'Próxima página';
+
+  @override
+  String get scrimLabel => 'Lámina';
+
+  @override
+  String get aboutListTileTitleRaw => r'Acerca de $applicationName';
+
+  @override
+  String? get licensesPackageDetailTextOne => '1 licencia';
+
+  @override
+  String get licensesPackageDetailTextOther => r'$licenseCount licencias';
+
+  @override
+  String get pageRowsInfoTitleRaw => r'$firstRow–$lastRow de $rowCount';
+
+  @override
+  String get pageRowsInfoTitleApproximateRaw => r'$firstRow–$lastRow de aproximadamente $rowCount';
+
+  @override
+  String? get selectedRowCountTitleOne => 'Se seleccionó 1 elemento';
+
+  @override
+  String get selectedRowCountTitleOther => r'Se seleccionaron $selectedRowCount elementos';
+
+  @override
+  String get scanTextButtonLabel => 'Analizar texto';
+
+  @override
+  String get lookUpButtonLabel => 'Mirar hacia arriba';
+
+  @override
+  String get anteMeridiemAbbreviation => 'a.m.';
+
+  @override
+  String get postMeridiemAbbreviation => 'p.m.';
+
+  @override
+  String get modalBarrierDismissLabel => 'Descartar';
+
+  @override
+  String get menuDismissLabel => 'Descartar menú';
+
+  @override
+  String get unspecifiedDateRange => 'Período';
+
+  @override
+  String get dateInputLabel => 'Ingresar fecha';
+
+  @override
+  String get dateRangeStartDateSemanticLabelRaw => r'Fecha de inicio: $fullDate';
+
+  @override
+  String get dateRangeEndDateSemanticLabelRaw => r'Fecha de finalización: $fullDate';
+
+  @override
+  String get invalidDateFormatLabel => 'El formato no es válido.';
+
+  @override
+  String get invalidDateRangeLabel => 'El rango no es válido.';
+
+  @override
+  String get dateOutOfRangeLabel => 'Fuera de rango';
+
+  @override
+  String get datePickerHelpText => 'Selecciona una fecha';
+
+  @override
+  String get dateRangePickerHelpText => 'Selecciona un período';
+
+  @override
+  String get calendarModeButtonLabel => 'Cambiar al calendario';
+
+  @override
+  String get inputDateModeButtonLabel => 'Cambiar a modo de entrada';
+
+  @override
+  String get timePickerDialHelpText => 'Selecciona una hora';
+
+  @override
+  String get timePickerInputHelpText => 'Ingresa una hora';
+
+  @override
+  String get invalidTimeLabel => 'Ingresa una hora válida';
+
+  @override
+  String get inputTimeModeButtonLabel => 'Cambiar al modo de entrada de texto';
+
+  @override
+  String get signedInLabel => 'Cuenta con la que accediste';
+
+  @override
+  String get dialogLabel => 'Diálogo';
+
+  @override
+  String get reorderItemToStart => 'Mover al inicio';
+
+  @override
+  String get expandedIconTapHint => 'Contraer';
+
+  @override
+  String get collapsedIconTapHint => 'Expandir';
+
+  @override
+  String get expansionTileExpandedHint => 'presiona dos veces para contraer';
+
+  @override
+  String get expansionTileCollapsedHint => 'presiona dos veces para expandir';
+
+  @override
+  String get expansionTileCollapsedTapHint => 'Expandir para ver más detalles';
+
+  @override
+  String get collapsedHint => 'Expandido';
+
+  @override
+  String get keyboardKeyAltGraph => 'AltGr';
+
+  @override
+  String get keyboardKeyCapsLock => 'Bloqueo de mayúscula';
+
+  @override
+  String get keyboardKeyChannelDown => 'Canal anterior';
+
+  @override
+  String get keyboardKeyChannelUp => 'Canal siguiente';
+
+  @override
+  String get keyboardKeyNumLock => 'Bloqueo numérico';
+
+  @override
+  String get keyboardKeyNumpadEnter => 'Num Enter';
+
+  @override
+  String get keyboardKeyPageDown => 'AvPág';
+
+  @override
+  String get keyboardKeyPageUp => 'RePág';
+
+  @override
+  String get keyboardKeyPower => 'Encender';
+
+  @override
+  String get keyboardKeyPowerOff => 'Apagar';
+
+  @override
+  String get keyboardKeyPrintScreen => 'Imprimir pantalla';
+
+  @override
+  String get keyboardKeyScrollLock => 'Bloqueo de desplazamiento';
+
+  @override
+  String get keyboardKeySelect => 'Select';
+
+  @override
+  String get keyboardKeyShift => 'Mayúsculas';
+
+  @override
+  String get keyboardKeySpace => 'Barra espaciadora';
+}
+
 /// The translations for Spanish Castilian, as used in Guatemala (`es_GT`).
 class MaterialLocalizationEsGt extends MaterialLocalizationEs {
   /// Create an instance of the translation bundle for Spanish Castilian, as used in Guatemala.
@@ -46629,7 +46819,7 @@ final Set<String> kMaterialSupportedLanguages = HashSet<String>.from(const <Stri
 ///  * `de` - German (plus one country variation)
 ///  * `el` - Modern Greek
 ///  * `en` - English (plus 8 country variations)
-///  * `es` - Spanish Castilian (plus 20 country variations)
+///  * `es` - Spanish Castilian (plus 21 country variations)
 ///  * `et` - Estonian
 ///  * `eu` - Basque
 ///  * `fa` - Persian
@@ -46787,6 +46977,8 @@ GlobalMaterialLocalizations? getMaterialTranslation(
           return MaterialLocalizationEsDo(fullYearFormat: fullYearFormat, compactDateFormat: compactDateFormat, shortDateFormat: shortDateFormat, mediumDateFormat: mediumDateFormat, longDateFormat: longDateFormat, yearMonthFormat: yearMonthFormat, shortMonthDayFormat: shortMonthDayFormat, decimalFormat: decimalFormat, twoDigitZeroPaddedFormat: twoDigitZeroPaddedFormat);
         case 'EC':
           return MaterialLocalizationEsEc(fullYearFormat: fullYearFormat, compactDateFormat: compactDateFormat, shortDateFormat: shortDateFormat, mediumDateFormat: mediumDateFormat, longDateFormat: longDateFormat, yearMonthFormat: yearMonthFormat, shortMonthDayFormat: shortMonthDayFormat, decimalFormat: decimalFormat, twoDigitZeroPaddedFormat: twoDigitZeroPaddedFormat);
+        case 'ES':
+          return MaterialLocalizationEsEs(fullYearFormat: fullYearFormat, compactDateFormat: compactDateFormat, shortDateFormat: shortDateFormat, mediumDateFormat: mediumDateFormat, longDateFormat: longDateFormat, yearMonthFormat: yearMonthFormat, shortMonthDayFormat: shortMonthDayFormat, decimalFormat: decimalFormat, twoDigitZeroPaddedFormat: twoDigitZeroPaddedFormat);
         case 'GT':
           return MaterialLocalizationEsGt(fullYearFormat: fullYearFormat, compactDateFormat: compactDateFormat, shortDateFormat: shortDateFormat, mediumDateFormat: mediumDateFormat, longDateFormat: longDateFormat, yearMonthFormat: yearMonthFormat, shortMonthDayFormat: shortMonthDayFormat, decimalFormat: decimalFormat, twoDigitZeroPaddedFormat: twoDigitZeroPaddedFormat);
         case 'HN':
