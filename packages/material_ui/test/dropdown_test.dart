@@ -4988,7 +4988,7 @@ void main() {
   testWidgets('DropdownButtonFormField underline is at the bottom of the expanded height', (
     WidgetTester tester,
   ) async {
-    const double containerHeight = 200.0;
+    const containerHeight = 200.0;
 
     await tester.pumpWidget(
       MaterialApp(
@@ -4998,7 +4998,9 @@ void main() {
             child: DropdownButtonFormField<int>(
               isExpanded: true,
               isVerticallyExpanded: true,
-              items: const <DropdownMenuItem<int>>[DropdownMenuItem<int>(value: 1, child: Text('Option 1'))],
+              items: const <DropdownMenuItem<int>>[
+                DropdownMenuItem<int>(value: 1, child: Text('Option 1')),
+              ],
               onChanged: (_) {},
             ),
           ),
