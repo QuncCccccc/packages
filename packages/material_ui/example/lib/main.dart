@@ -10,6 +10,7 @@ import 'button_style/button_style.0.dart' as button_style_0;
 import 'floating_action_button/floating_action_button.1.dart'
     as floating_action_button_1;
 import 'icon_button/icon_button.3.dart' as icon_button_3;
+import 'icon_button/icon_button.4.dart' as icon_button_4;
 import 'segmented_button/segmented_button.0.dart' as segmented_button_0;
 import 'card/card.2.dart' as card_2;
 import 'carousel/carousel.0.dart' as carousel_0;
@@ -79,6 +80,12 @@ class ExampleApp extends StatelessWidget {
       title: 'Icon buttons',
       builder: (BuildContext context) =>
           const icon_button_3.IconButtonToggleApp(),
+    ),
+    _Example(
+      filepath: 'icon_button/icon_button.4.dart',
+      title: 'Material 3 Expressive icon buttons',
+      builder: (BuildContext context) =>
+          const icon_button_4.IconButtonM3EExampleApp(),
     ),
     _Example(
       filepath: 'segmented_button/segmented_button.0.dart',
