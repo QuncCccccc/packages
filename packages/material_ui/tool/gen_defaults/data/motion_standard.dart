@@ -5,7 +5,7 @@
 // Version: 38.2.31
 
 // dart format off
-import 'package:flutter/animation.dart';
+import 'cubic_struct.dart';
 
 class TokenMotionStandard {
   /// md.sys.motion.duration.extra-long1

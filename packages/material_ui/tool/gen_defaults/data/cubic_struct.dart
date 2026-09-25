@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'package:flutter/animation.dart';
+class Cubic {
+  const Cubic(this.a, this.b, this.c, this.d);
 
-part 'generated/motion_defaults_m3.g.dart';
+  final double a;
+  final double b;
+  final double c;
+  final double d;
+}
