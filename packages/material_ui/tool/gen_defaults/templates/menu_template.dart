@@ -2,29 +2,32 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import '../data/list.dart';
+import '../data/menu.dart';
 import 'template.dart';
 
-class MenuTemplate extends TokenTemplate {
-  const MenuTemplate(
-    super.blockName,
-    super.fileName,
-    super.tokens, {
-    super.colorSchemePrefix = '_colors.',
-  });
+class MenuTemplateM3 extends TokenTemplateM3 {
+  const MenuTemplateM3();
 
   @override
-  String generate() =>
+  String get name => 'Menu';
+
+  @override
+  String get parentFilePath => 'menu_anchor.dart';
+
+  @override
+  String generateContents(String className) =>
       '''
 class _MenuBarDefaultsM3 extends MenuStyle {
   _MenuBarDefaultsM3(this.context)
     : super(
-      elevation: const MaterialStatePropertyAll<double?>(${elevation('md.comp.menu.container')}),
+      elevation: const MaterialStatePropertyAll<double?>(${number(TokenMenu.containerElevation)}),
       shape: const MaterialStatePropertyAll<OutlinedBorder>(_defaultMenuBorder),
       alignment: AlignmentDirectional.bottomStart,
     );
 
   static const RoundedRectangleBorder _defaultMenuBorder =
-    ${shape('md.comp.menu.container', '')};
+    ${shape(TokenMenu.containerShape, '')};
 
   final BuildContext context;
 
@@ -32,17 +35,17 @@ class _MenuBarDefaultsM3 extends MenuStyle {
 
   @override
   WidgetStateProperty<Color?> get backgroundColor {
-    return MaterialStatePropertyAll<Color?>(${componentColor('md.comp.menu.container')});
+    return MaterialStatePropertyAll<Color?>(${color(TokenMenu.containerColor)});
   }
 
   @override
   WidgetStateProperty<Color?>? get shadowColor {
-    return MaterialStatePropertyAll<Color?>(${color('md.comp.menu.container.shadow-color')});
+    return MaterialStatePropertyAll<Color?>(${color(TokenMenu.containerShadowColor)});
   }
 
   @override
   WidgetStateProperty<Color?>? get surfaceTintColor {
-    return const MaterialStatePropertyAll<Color?>(${colorOrTransparent('md.comp.menu.container.surface-tint-layer')});
+    return const MaterialStatePropertyAll<Color?>(Colors.transparent);
   }
 
   @override
@@ -89,18 +92,18 @@ class _MenuButtonDefaultsM3 extends ButtonStyle {
   WidgetStateProperty<Color?>? get foregroundColor {
     return WidgetStateProperty.resolveWith((Set<WidgetState> states) {
       if (states.contains(WidgetState.disabled)) {
-        return ${componentColor('md.comp.list.list-item.disabled.label-text')};
+        return ${colorWithOpacity(TokenList.listItemDisabledLabelTextColor, TokenList.listItemDisabledLabelTextOpacity)};
       }
       if (states.contains(WidgetState.pressed)) {
-        return ${componentColor('md.comp.list.list-item.pressed.label-text')};
+        return ${color(TokenList.listItemPressedLabelTextColor)};
       }
       if (states.contains(WidgetState.hovered)) {
-        return ${componentColor('md.comp.list.list-item.hover.label-text')};
+        return ${color(TokenList.listItemHoverLabelTextColor)};
       }
       if (states.contains(WidgetState.focused)) {
-        return ${componentColor('md.comp.list.list-item.focus.label-text')};
+        return ${color(TokenList.listItemFocusLabelTextColor)};
       }
-      return ${componentColor('md.comp.list.list-item.label-text')};
+      return ${color(TokenList.listItemLabelTextColor)};
     });
   }
 
@@ -108,18 +111,18 @@ class _MenuButtonDefaultsM3 extends ButtonStyle {
   WidgetStateProperty<Color?>? get iconColor {
     return WidgetStateProperty.resolveWith((Set<WidgetState> states) {
       if (states.contains(WidgetState.disabled)) {
-        return ${componentColor('md.comp.list.list-item.disabled.leading-icon')};
+        return ${colorWithOpacity(TokenList.listItemDisabledLeadingIconColor, TokenList.listItemDisabledLeadingIconOpacity)};
       }
       if (states.contains(WidgetState.pressed)) {
-        return ${componentColor('md.comp.list.list-item.pressed.leading-icon.icon')};
+        return ${color(TokenList.listItemPressedLeadingIconIconColor)};
       }
       if (states.contains(WidgetState.hovered)) {
-        return ${componentColor('md.comp.list.list-item.hover.leading-icon.icon')};
+        return ${color(TokenList.listItemHoverLeadingIconIconColor)};
       }
       if (states.contains(WidgetState.focused)) {
-        return ${componentColor('md.comp.list.list-item.focus.leading-icon.icon')};
+        return ${color(TokenList.listItemFocusLeadingIconIconColor)};
       }
-      return ${componentColor('md.comp.list.list-item.leading-icon')};
+      return ${color(TokenList.listItemLeadingIconColor)};
     });
   }
 
@@ -127,7 +130,7 @@ class _MenuButtonDefaultsM3 extends ButtonStyle {
 
   @override
   WidgetStateProperty<double>? get iconSize {
-    return const MaterialStatePropertyAll<double>(${getToken("md.comp.list.list-item.leading-icon.size")});
+    return const MaterialStatePropertyAll<double>(${number(TokenList.listItemLeadingIconSize)});
   }
 
   @override
@@ -148,13 +151,13 @@ class _MenuButtonDefaultsM3 extends ButtonStyle {
     return WidgetStateProperty.resolveWith(
       (Set<WidgetState> states) {
         if (states.contains(WidgetState.pressed)) {
-          return ${componentColor('md.comp.list.list-item.pressed.state-layer')};
+          return ${colorWithOpacity(TokenList.listItemPressedStateLayerColor, TokenList.listItemPressedStateLayerOpacity)};
         }
         if (states.contains(WidgetState.hovered)) {
-          return ${componentColor('md.comp.list.list-item.hover.state-layer')};
+          return ${colorWithOpacity(TokenList.listItemHoverStateLayerColor, TokenList.listItemHoverStateLayerOpacity)};
         }
         if (states.contains(WidgetState.focused)) {
-          return ${componentColor('md.comp.list.list-item.focus.state-layer')};
+          return ${colorWithOpacity(TokenList.listItemFocusStateLayerColor, TokenList.listItemFocusStateLayerOpacity)};
         }
         return Colors.transparent;
       },
@@ -220,16 +223,16 @@ class _MenuButtonDefaultsM3 extends ButtonStyle {
   }
 }
 
-class _MenuDefaultsM3 extends MenuStyle {
-  _MenuDefaultsM3(this.context)
+class $className extends MenuStyle {
+  $className(this.context)
     : super(
-      elevation: const MaterialStatePropertyAll<double?>(${elevation('md.comp.menu.container')}),
+      elevation: const MaterialStatePropertyAll<double?>(${number(TokenMenu.containerElevation)}),
       shape: const MaterialStatePropertyAll<OutlinedBorder>(_defaultMenuBorder),
       alignment: AlignmentDirectional.topEnd,
     );
 
   static const RoundedRectangleBorder _defaultMenuBorder =
-    ${shape('md.comp.menu.container', '')};
+    ${shape(TokenMenu.containerShape, '')};
 
   final BuildContext context;
 
@@ -237,17 +240,17 @@ class _MenuDefaultsM3 extends MenuStyle {
 
   @override
   WidgetStateProperty<Color?> get backgroundColor {
-    return MaterialStatePropertyAll<Color?>(${componentColor('md.comp.menu.container')});
+    return MaterialStatePropertyAll<Color?>(${color(TokenMenu.containerColor)});
   }
 
   @override
   WidgetStateProperty<Color?>? get surfaceTintColor {
-    return ${componentColor('md.comp.menu.container.surface-tint-layer') == 'null' ? 'const MaterialStatePropertyAll<Color?>(Colors.transparent)' : 'MaterialStatePropertyAll<Color?>(${componentColor('md.comp.menu.container.surface-tint-layer')})'};
+    return const MaterialStatePropertyAll<Color?>(Colors.transparent);
   }
 
   @override
   WidgetStateProperty<Color?>? get shadowColor {
-    return MaterialStatePropertyAll<Color?>(${color('md.comp.menu.container.shadow-color')});
+    return MaterialStatePropertyAll<Color?>(${color(TokenMenu.containerShadowColor)});
   }
 
   @override
