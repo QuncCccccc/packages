@@ -2695,4 +2695,122 @@ void main() {
     // The button should still be focused.
     expect(getButtonFocusNode().hasFocus, true);
   });
+
+  testWidgets('M3E ElevatedButton resolves selected and unselected colors', (
+    WidgetTester tester,
+  ) async {
+    Future<void> pumpButton(bool isSelected) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: ThemeData(
+            elevatedButtonTheme: const ElevatedButtonThemeData(
+              variant: StyleVariant.material3Expressive,
+            ),
+          ),
+          home: Center(
+            child: ElevatedButton(
+              isSelected: isSelected,
+              onPressed: () {},
+              child: const Text('Button'),
+            ),
+          ),
+        ),
+      );
+    }
+
+    await pumpButton(false);
+    expect(
+      tester
+          .widget<Material>(
+            find.descendant(of: find.byType(ElevatedButton), matching: find.byType(Material)),
+          )
+          .color,
+      Theme.of(tester.element(find.byType(ElevatedButton))).colorScheme.surfaceContainerLow,
+    );
+
+    await pumpButton(true);
+    expect(
+      tester
+          .widget<Material>(
+            find.descendant(of: find.byType(ElevatedButton), matching: find.byType(Material)),
+          )
+          .color,
+      Theme.of(tester.element(find.byType(ElevatedButton))).colorScheme.primary,
+    );
+  });
+
+  testWidgets('M3E ElevatedButton uses size variants', (WidgetTester tester) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: ThemeData(
+          elevatedButtonTheme: const ElevatedButtonThemeData(
+            variant: StyleVariant.material3Expressive,
+          ),
+        ),
+        home: Center(
+          child: ElevatedButton(
+            style: const ButtonStyle(sizeVariant: ButtonSizeVariant.medium),
+            onPressed: () {},
+            child: const Text('Button'),
+          ),
+        ),
+      ),
+    );
+
+    expect(tester.getSize(find.byType(ElevatedButton)).height, 56.0);
+  });
+
+  testWidgets('ElevatedButton isSelected exposes selected semantics', (WidgetTester tester) async {
+    final SemanticsHandle handle = tester.ensureSemantics();
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Center(
+          child: ElevatedButton(isSelected: true, onPressed: () {}, child: const Text('Button')),
+        ),
+      ),
+    );
+
+    expect(
+      tester.getSemantics(find.byType(ElevatedButton)),
+      matchesSemantics(
+        hasTapAction: true,
+        hasFocusAction: true,
+        hasEnabledState: true,
+        isButton: true,
+        isEnabled: true,
+        isFocusable: true,
+        hasSelectedState: true,
+        isSelected: true,
+        label: 'Button',
+      ),
+    );
+    handle.dispose();
+  });
+
+  testWidgets('M3E ElevatedButton.icon uses size-specific icon-label spacing', (
+    WidgetTester tester,
+  ) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: ThemeData(
+          elevatedButtonTheme: const ElevatedButtonThemeData(
+            variant: StyleVariant.material3Expressive,
+          ),
+        ),
+        home: Center(
+          child: ElevatedButton.icon(
+            style: const ButtonStyle(sizeVariant: ButtonSizeVariant.large),
+            onPressed: () {},
+            icon: const Icon(Icons.add),
+            label: const Text('Button'),
+          ),
+        ),
+      ),
+    );
+
+    final Row row = tester.widget<Row>(
+      find.descendant(of: find.byType(ElevatedButton), matching: find.byType(Row)),
+    );
+    expect(row.spacing, 12.0);
+  });
 }
