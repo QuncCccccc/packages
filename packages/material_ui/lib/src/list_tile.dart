@@ -895,12 +895,21 @@ class ListTile extends StatelessWidget {
           theme.disabledColor,
         );
     final iconThemeData = IconThemeData(color: effectiveIconColor);
+    // Routes opened from the tile, such as dialogs and menus, only capture the
+    // closest IconButtonTheme. So the IconButtonTheme of the tile passes on the
+    // variant inherited from enclosing IconButtonThemes, unless routes would
+    // get the same variant from ThemeData.iconButtonTheme anyway.
+    final StyleVariant inheritedIconButtonVariant = IconButtonTheme.variantOf(context);
     final iconButtonThemeData = IconButtonThemeData(
       style:
           IconButtonTheme.of(context).style?.copyWith(
             foregroundColor: WidgetStatePropertyAll<Color?>(effectiveIconButtonColor),
           ) ??
           IconButton.styleFrom(foregroundColor: effectiveIconButtonColor),
+      variant:
+          inheritedIconButtonVariant == (theme.iconButtonTheme.variant ?? StyleVariant.material3)
+          ? null
+          : inheritedIconButtonVariant,
     );
 
     TextStyle? leadingAndTrailingStyle;

@@ -69,6 +69,13 @@ class IconButtonThemeData with Diagnosticable {
   /// [ThemeData.iconButtonTheme] when there is no enclosing [IconButtonTheme].
   /// To change the variant of a subtree, wrap it in an [IconButtonTheme].
   ///
+  /// Routes such as dialogs, bottom sheets, and menus only carry over the
+  /// closest [IconButtonTheme] from where they were opened (see
+  /// [InheritedTheme.capture]). If that theme doesn't set [variant], a variant
+  /// set by an enclosing [IconButtonTheme] doesn't reach the new route. To keep
+  /// it, set the variant in [ThemeData.iconButtonTheme], or set [variant] on
+  /// the closest theme.
+  ///
   /// See also:
   ///
   ///  * [IconButtonTheme.variantOf], which returns the variant that applies

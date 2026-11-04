@@ -33,6 +33,7 @@ import 'scaffold.dart';
 import 'tabs.dart';
 import 'text_theme.dart';
 import 'theme.dart';
+import 'theme_data.dart';
 
 part 'generated/app_bar_defaults_m3.g.dart';
 
@@ -907,6 +908,16 @@ class _AppBarState extends State<AppBar> {
     assert(debugCheckHasMaterialLocalizations(context));
     final ThemeData theme = Theme.of(context);
     final IconButtonThemeData iconButtonTheme = IconButtonTheme.of(context);
+    // Routes opened from the leading widget or the actions, such as dialogs
+    // and menus, only capture the closest IconButtonTheme. So the
+    // IconButtonThemes below pass on the variant inherited from enclosing
+    // IconButtonThemes, unless routes would get the same variant from
+    // ThemeData.iconButtonTheme anyway.
+    final StyleVariant inheritedIconButtonVariant = IconButtonTheme.variantOf(context);
+    final StyleVariant? iconButtonVariant =
+        inheritedIconButtonVariant == (theme.iconButtonTheme.variant ?? StyleVariant.material3)
+        ? null
+        : inheritedIconButtonVariant;
     final AppBarThemeData appBarTheme = AppBarTheme.of(context);
     final AppBarThemeData defaults = theme.useMaterial3
         ? _AppBarDefaultsM3(context)
@@ -1025,7 +1036,10 @@ class _AppBarState extends State<AppBar> {
         // a new [IconButtonThemeData] based on the values from [overallIconTheme]. If [iconButtonTheme] only
         // has null values, the default [overallIconTheme] will be applied below by [IconTheme.merge]
         if (overallIconTheme == defaults.iconTheme) {
-          effectiveIconButtonTheme = iconButtonTheme;
+          effectiveIconButtonTheme = IconButtonThemeData(
+            style: iconButtonTheme.style,
+            variant: iconButtonTheme.variant ?? iconButtonVariant,
+          );
         } else {
           // The [IconButton.styleFrom] method is used to generate a correct [overlayColor] based on the [foregroundColor].
           final ButtonStyle leadingIconButtonStyle = IconButton.styleFrom(
@@ -1039,6 +1053,7 @@ class _AppBarState extends State<AppBar> {
               overlayColor: leadingIconButtonStyle.overlayColor,
               iconSize: leadingIconButtonStyle.iconSize,
             ),
+            variant: iconButtonVariant,
           );
         }
 
@@ -1120,7 +1135,10 @@ class _AppBarState extends State<AppBar> {
     if (actions != null) {
       final IconButtonThemeData effectiveActionsIconButtonTheme;
       if (actionsIconTheme == defaults.actionsIconTheme) {
-        effectiveActionsIconButtonTheme = iconButtonTheme;
+        effectiveActionsIconButtonTheme = IconButtonThemeData(
+          style: iconButtonTheme.style,
+          variant: iconButtonTheme.variant ?? iconButtonVariant,
+        );
       } else {
         final ButtonStyle actionsIconButtonStyle = IconButton.styleFrom(
           foregroundColor: actionsIconTheme.color,
@@ -1133,6 +1151,7 @@ class _AppBarState extends State<AppBar> {
             overlayColor: actionsIconButtonStyle.overlayColor,
             iconSize: actionsIconButtonStyle.iconSize,
           ),
+          variant: iconButtonVariant,
         );
       }
 

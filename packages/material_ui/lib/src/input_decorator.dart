@@ -2364,6 +2364,16 @@ class _InputDecoratorState extends State<InputDecorator> with TickerProviderStat
         ? _InputDecoratorDefaultsM3(context)
         : _InputDecoratorDefaultsM2(context);
     final IconButtonThemeData iconButtonTheme = IconButtonTheme.of(context);
+    // Routes opened from the prefix or suffix icon, such as dialogs and menus,
+    // only capture the closest IconButtonTheme. So the IconButtonThemes of the
+    // icons pass on the variant inherited from enclosing IconButtonThemes,
+    // unless routes would get the same variant from ThemeData.iconButtonTheme
+    // anyway.
+    final StyleVariant inheritedIconButtonVariant = IconButtonTheme.variantOf(context);
+    final StyleVariant? iconButtonVariant =
+        inheritedIconButtonVariant == (themeData.iconButtonTheme.variant ?? StyleVariant.material3)
+        ? null
+        : inheritedIconButtonVariant;
 
     final TextStyle labelStyle = _getInlineLabelStyle(themeData, defaults);
     final TextBaseline textBaseline = labelStyle.textBaseline!;
@@ -2536,6 +2546,7 @@ class _InputDecoratorState extends State<InputDecorator> with TickerProviderStat
                         ),
                         iconSize: WidgetStatePropertyAll<double>(iconSize),
                       ).merge(iconButtonTheme.style),
+                      variant: iconButtonVariant,
                     ),
                     child: Semantics(
                       tagForChildren: _kPrefixIconSemanticsTag,
@@ -2576,6 +2587,7 @@ class _InputDecoratorState extends State<InputDecorator> with TickerProviderStat
                         ),
                         iconSize: WidgetStatePropertyAll<double>(iconSize),
                       ).merge(iconButtonTheme.style),
+                      variant: iconButtonVariant,
                     ),
                     child: Semantics(
                       tagForChildren: _kSuffixIconSemanticsTag,

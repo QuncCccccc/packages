@@ -1,0 +1,3 @@
+changelog: |
+  - Keeps the `IconButtonThemeData.variant` of enclosing themes in dialogs and menus opened from `AppBar`, `ListTile`, and `InputDecorator`.
+version: patch

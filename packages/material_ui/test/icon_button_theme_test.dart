@@ -607,6 +607,198 @@ void main() {
         expect(buttonShape(tester), isA<RoundedRectangleBorder>());
       },
     );
+
+    // Opens a dialog from an IconButton that `buildHome` places below an
+    // IconButtonTheme with `outerVariant`, and returns the variant that applies
+    // in the dialog.
+    //
+    // A dialog only captures the closest IconButtonTheme (see
+    // InheritedTheme.capture), so the variant is lost if that theme doesn't
+    // specify one.
+    Future<StyleVariant?> variantInDialog(
+      WidgetTester tester,
+      Widget Function(Widget button) buildHome, {
+      ThemeData? theme,
+      StyleVariant outerVariant = StyleVariant.material3Expressive,
+    }) async {
+      StyleVariant? variant;
+      final Widget button = Builder(
+        builder: (BuildContext context) {
+          return IconButton(
+            key: buttonKey,
+            onPressed: () {
+              showDialog<void>(
+                context: context,
+                builder: (BuildContext dialogContext) {
+                  variant = IconButtonTheme.variantOf(dialogContext);
+                  return const SizedBox();
+                },
+              );
+            },
+            icon: const Icon(Icons.add),
+          );
+        },
+      );
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: theme,
+          home: IconButtonTheme(
+            data: IconButtonThemeData(variant: outerVariant),
+            child: buildHome(button),
+          ),
+        ),
+      );
+      await tester.tap(find.byKey(buttonKey));
+      await tester.pumpAndSettle();
+      return variant;
+    }
+
+    testWidgets('a dialog opened from AppBar.leading keeps the inherited variant', (
+      WidgetTester tester,
+    ) async {
+      final StyleVariant? variant = await variantInDialog(
+        tester,
+        // The AppBar uses the style of the closest IconButtonTheme, which
+        // doesn't specify a variant.
+        (Widget button) => IconButtonTheme(
+          data: const IconButtonThemeData(style: customStyle),
+          child: Scaffold(appBar: AppBar(leading: button)),
+        ),
+      );
+
+      expect(variant, StyleVariant.material3Expressive);
+    });
+
+    testWidgets(
+      'a dialog opened from AppBar.leading with a custom foregroundColor keeps the inherited variant',
+      (WidgetTester tester) async {
+        final StyleVariant? variant = await variantInDialog(
+          tester,
+          (Widget button) => Scaffold(
+            appBar: AppBar(foregroundColor: const Color(0xffff0000), leading: button),
+          ),
+        );
+
+        expect(variant, StyleVariant.material3Expressive);
+      },
+    );
+
+    testWidgets('a dialog opened from AppBar.actions keeps the inherited variant', (
+      WidgetTester tester,
+    ) async {
+      final StyleVariant? variant = await variantInDialog(
+        tester,
+        // The AppBar uses the style of the closest IconButtonTheme, which
+        // doesn't specify a variant.
+        (Widget button) => IconButtonTheme(
+          data: const IconButtonThemeData(style: customStyle),
+          child: Scaffold(appBar: AppBar(actions: <Widget>[button])),
+        ),
+      );
+
+      expect(variant, StyleVariant.material3Expressive);
+    });
+
+    testWidgets(
+      'a dialog opened from AppBar.actions with a custom foregroundColor keeps the inherited variant',
+      (WidgetTester tester) async {
+        final StyleVariant? variant = await variantInDialog(
+          tester,
+          (Widget button) => Scaffold(
+            appBar: AppBar(foregroundColor: const Color(0xffff0000), actions: <Widget>[button]),
+          ),
+        );
+
+        expect(variant, StyleVariant.material3Expressive);
+      },
+    );
+
+    testWidgets('a dialog opened from ListTile.trailing keeps the inherited variant', (
+      WidgetTester tester,
+    ) async {
+      final StyleVariant? variant = await variantInDialog(
+        tester,
+        (Widget button) => Scaffold(
+          body: ListTile(title: const Text('Title'), trailing: button),
+        ),
+      );
+
+      expect(variant, StyleVariant.material3Expressive);
+    });
+
+    testWidgets('a dialog opened from InputDecoration.prefixIcon keeps the inherited variant', (
+      WidgetTester tester,
+    ) async {
+      final StyleVariant? variant = await variantInDialog(
+        tester,
+        (Widget button) => Scaffold(
+          body: TextField(decoration: InputDecoration(prefixIcon: button)),
+        ),
+      );
+
+      expect(variant, StyleVariant.material3Expressive);
+    });
+
+    testWidgets('a dialog opened from InputDecoration.suffixIcon keeps the inherited variant', (
+      WidgetTester tester,
+    ) async {
+      final StyleVariant? variant = await variantInDialog(
+        tester,
+        (Widget button) => Scaffold(
+          body: TextField(decoration: InputDecoration(suffixIcon: button)),
+        ),
+      );
+
+      expect(variant, StyleVariant.material3Expressive);
+    });
+
+    testWidgets('a dialog opened from ListTile.trailing keeps an inherited Material 3 opt-out', (
+      WidgetTester tester,
+    ) async {
+      final StyleVariant? variant = await variantInDialog(
+        tester,
+        (Widget button) => Scaffold(
+          body: ListTile(title: const Text('Title'), trailing: button),
+        ),
+        theme: ThemeData(
+          iconButtonTheme: const IconButtonThemeData(variant: StyleVariant.material3Expressive),
+        ),
+        outerVariant: StyleVariant.material3,
+      );
+
+      expect(variant, StyleVariant.material3);
+    });
+
+    testWidgets(
+      'a Theme in ListTile.trailing sets the variant when no IconButtonTheme specifies one',
+      (WidgetTester tester) async {
+        late StyleVariant variant;
+        await tester.pumpWidget(
+          MaterialApp(
+            home: Scaffold(
+              body: ListTile(
+                title: const Text('Title'),
+                trailing: Theme(
+                  data: ThemeData(
+                    iconButtonTheme: const IconButtonThemeData(
+                      variant: StyleVariant.material3Expressive,
+                    ),
+                  ),
+                  child: Builder(
+                    builder: (BuildContext context) {
+                      variant = IconButtonTheme.variantOf(context);
+                      return const SizedBox();
+                    },
+                  ),
+                ),
+              ),
+            ),
+          ),
+        );
+
+        expect(variant, StyleVariant.material3Expressive);
+      },
+    );
   });
 }
 
