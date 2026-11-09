@@ -786,7 +786,8 @@ class IconButton extends StatelessWidget {
     final ThemeData theme = Theme.of(context);
 
     if (theme.useMaterial3) {
-      final StyleVariant effectiveVariant = IconButtonTheme.variantOf(context);
+      final StyleVariant effectiveVariant =
+          IconButtonTheme.of(context).variant ?? StyleVariant.material3;
 
       final Size? minSize = constraints == null
           ? null

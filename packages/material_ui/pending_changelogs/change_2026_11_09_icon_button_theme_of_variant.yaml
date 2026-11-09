@@ -1,0 +1,5 @@
+changelog: |
+  - Changes `IconButtonTheme.of` to return the variant inherited from enclosing themes.
+  - Fixes `IconButton` losing the inherited variant in dialogs and other routes.
+  - Deprecates `IconButtonTheme.variantOf`. Use `IconButtonTheme.of(context).variant` instead.
+version: minor
