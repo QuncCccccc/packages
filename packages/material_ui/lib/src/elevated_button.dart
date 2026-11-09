@@ -501,7 +501,7 @@ class ElevatedButton extends ButtonStyleButton {
     final ThemeData theme = Theme.of(context);
     final ColorScheme colorScheme = theme.colorScheme;
     final ElevatedButtonThemeData elevatedButtonTheme = ElevatedButtonTheme.of(context);
-    final StyleVariant effectiveVariant = ElevatedButtonTheme.variantOf(context);
+    final StyleVariant effectiveVariant = elevatedButtonTheme.variant ?? StyleVariant.material3;
     final ButtonSizeVariant? effectiveSize =
         style?.sizeVariant ?? elevatedButtonTheme.style?.sizeVariant;
     final ButtonShapeVariant? effectiveShape =
@@ -614,7 +614,7 @@ class _ElevatedButtonWithIconChild extends StatelessWidget {
     final ElevatedButtonThemeData elevatedButtonTheme = ElevatedButtonTheme.of(context);
     final bool useExpressive =
         Theme.of(context).useMaterial3 &&
-        ElevatedButtonTheme.variantOf(context) == StyleVariant.material3Expressive;
+        elevatedButtonTheme.variant == StyleVariant.material3Expressive;
     final double spacing;
     if (useExpressive) {
       final ButtonSizeVariant effectiveSize =

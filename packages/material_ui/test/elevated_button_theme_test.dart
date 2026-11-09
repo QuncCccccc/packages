@@ -515,7 +515,7 @@ void main() {
     },
   );
 
-  group('ElevatedButtonTheme.variantOf', () {
+  group('ElevatedButtonTheme variant inheritance', () {
     // A square elevated button uses a RoundedRectangleBorder in Material 3
     // Expressive. Material 3 ignores shapeVariant and uses a StadiumBorder.
     const buttonKey = Key('button');
@@ -541,7 +541,7 @@ void main() {
     Widget buttonWithVariant(ValueSetter<StyleVariant> onVariant) {
       return Builder(
         builder: (BuildContext context) {
-          onVariant(ElevatedButtonTheme.variantOf(context));
+          onVariant(ElevatedButtonTheme.of(context).variant ?? StyleVariant.material3);
           return squareButton;
         },
       );
@@ -745,6 +745,136 @@ void main() {
         find.descendant(of: find.byKey(buttonKey), matching: find.byType(Row)),
       );
       expect(row.spacing, 12);
+    });
+
+    testWidgets('ElevatedButtonTheme.of inherits only the variant', (WidgetTester tester) async {
+      late ElevatedButtonThemeData data;
+      await tester.pumpWidget(
+        MaterialApp(
+          home: ElevatedButtonTheme(
+            data: const ElevatedButtonThemeData(
+              style: ButtonStyle(elevation: WidgetStatePropertyAll<double>(4)),
+              variant: StyleVariant.material3Expressive,
+            ),
+            child: ElevatedButtonTheme(
+              data: const ElevatedButtonThemeData(style: customStyle),
+              child: Builder(
+                builder: (BuildContext context) {
+                  data = ElevatedButtonTheme.of(context);
+                  return const SizedBox();
+                },
+              ),
+            ),
+          ),
+        ),
+      );
+
+      expect(
+        data,
+        const ElevatedButtonThemeData(
+          style: customStyle,
+          variant: StyleVariant.material3Expressive,
+        ),
+      );
+    });
+
+    testWidgets(
+      'ElevatedButtonTheme.of returns the closest data when there is no variant to inherit',
+      (WidgetTester tester) async {
+        const closestData = ElevatedButtonThemeData(style: customStyle);
+        late ElevatedButtonThemeData data;
+        await tester.pumpWidget(
+          MaterialApp(
+            home: ElevatedButtonTheme(
+              data: const ElevatedButtonThemeData(),
+              child: ElevatedButtonTheme(
+                data: closestData,
+                child: Builder(
+                  builder: (BuildContext context) {
+                    data = ElevatedButtonTheme.of(context);
+                    return const SizedBox();
+                  },
+                ),
+              ),
+            ),
+          ),
+        );
+
+        expect(data, same(closestData));
+      },
+    );
+
+    testWidgets('ElevatedButton in a dialog keeps the inherited variant', (
+      WidgetTester tester,
+    ) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Material(
+            child: ElevatedButtonTheme(
+              data: const ElevatedButtonThemeData(variant: StyleVariant.material3Expressive),
+              child: ElevatedButtonTheme(
+                data: const ElevatedButtonThemeData(style: customStyle),
+                child: Builder(
+                  builder: (BuildContext context) {
+                    return TextButton(
+                      onPressed: () {
+                        showDialog<void>(
+                          context: context,
+                          builder: (BuildContext context) => const Dialog(child: squareButton),
+                        );
+                      },
+                      child: const Text('Open'),
+                    );
+                  },
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+
+      await tester.tap(find.text('Open'));
+      await tester.pumpAndSettle();
+
+      expect(buttonShape(tester), isA<RoundedRectangleBorder>());
+    });
+
+    testWidgets('the deprecated ElevatedButtonTheme.variantOf returns the inherited variant', (
+      WidgetTester tester,
+    ) async {
+      late StyleVariant inheritedVariant;
+      late StyleVariant defaultVariant;
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Column(
+            children: <Widget>[
+              ElevatedButtonTheme(
+                data: const ElevatedButtonThemeData(variant: StyleVariant.material3Expressive),
+                child: ElevatedButtonTheme(
+                  data: const ElevatedButtonThemeData(style: customStyle),
+                  child: Builder(
+                    builder: (BuildContext context) {
+                      // ignore: deprecated_member_use_from_same_package
+                      inheritedVariant = ElevatedButtonTheme.variantOf(context);
+                      return const SizedBox();
+                    },
+                  ),
+                ),
+              ),
+              Builder(
+                builder: (BuildContext context) {
+                  // ignore: deprecated_member_use_from_same_package
+                  defaultVariant = ElevatedButtonTheme.variantOf(context);
+                  return const SizedBox();
+                },
+              ),
+            ],
+          ),
+        ),
+      );
+
+      expect(inheritedVariant, StyleVariant.material3Expressive);
+      expect(defaultVariant, StyleVariant.material3);
     });
   });
 }

@@ -63,16 +63,15 @@ class IconButtonThemeData with Diagnosticable {
   /// Material 3 when an ancestor opts into Material 3 Expressive, set this to
   /// [StyleVariant.material3].
   ///
-  /// An enclosing [IconButtonTheme] takes precedence over
-  /// [ThemeData.iconButtonTheme], even when a closer [Theme] specifies a
-  /// different variant. This matches [IconButtonTheme.of], which only uses
-  /// [ThemeData.iconButtonTheme] when there is no enclosing [IconButtonTheme].
-  /// To change the variant of a subtree, wrap it in an [IconButtonTheme].
+  /// An enclosing [IconButtonTheme] that specifies a variant takes precedence
+  /// over [ThemeData.iconButtonTheme], even when a closer [Theme] specifies a
+  /// different variant. To change the variant of a subtree, wrap it in an
+  /// [IconButtonTheme].
   ///
   /// See also:
   ///
-  ///  * [IconButtonTheme.variantOf], which returns the variant that applies
-  ///    at a given location.
+  ///  * [IconButtonTheme.of], which returns the theme that applies at a given
+  ///    location, with the inherited variant.
   final StyleVariant? variant;
 
   /// Linearly interpolate between two icon button themes.
@@ -129,9 +128,10 @@ class IconButtonTheme extends InheritedTheme {
   /// If there is no enclosing [IconButtonTheme] widget, then
   /// [ThemeData.iconButtonTheme] is used.
   ///
-  /// The returned [IconButtonThemeData.variant] is the value specified by
-  /// that theme, which can be null even when an ancestor specifies a variant.
-  /// Use [variantOf] to get the variant that applies at the given [context].
+  /// If the closest [IconButtonTheme] doesn't specify a variant, the returned
+  /// [IconButtonThemeData.variant] is inherited from the closest enclosing
+  /// [IconButtonTheme] that specifies one, and then from
+  /// [ThemeData.iconButtonTheme]. The other properties are not inherited.
   ///
   /// Typical usage is as follows:
   ///
@@ -139,46 +139,36 @@ class IconButtonTheme extends InheritedTheme {
   /// IconButtonThemeData theme = IconButtonTheme.of(context);
   /// ```
   static IconButtonThemeData of(BuildContext context) {
-    final IconButtonTheme? buttonTheme = context
-        .dependOnInheritedWidgetOfExactType<IconButtonTheme>();
-    return buttonTheme?.data ?? Theme.of(context).iconButtonTheme;
+    final IconButtonThemeData? data = context
+        .dependOnInheritedWidgetOfExactType<_ResolvedIconButtonTheme>()
+        ?.data;
+    if (data == null) {
+      return Theme.of(context).iconButtonTheme;
+    }
+    if (data.variant != null) {
+      return data;
+    }
+    final StyleVariant? themeVariant = Theme.of(context).iconButtonTheme.variant;
+    if (themeVariant == null) {
+      return data;
+    }
+    return IconButtonThemeData(style: data.style, variant: themeVariant);
   }
 
   /// Returns the [StyleVariant] that [IconButton]s use at the given [context].
   ///
-  /// The closest enclosing [IconButtonTheme] whose
-  /// [IconButtonThemeData.variant] is non-null determines the variant, so an
-  /// [IconButtonTheme] that doesn't specify a variant inherits it from its
-  /// ancestors. If none of the enclosing [IconButtonTheme]s specify a variant,
-  /// the variant of [ThemeData.iconButtonTheme] is used. If that is also null,
-  /// [StyleVariant.material3] is returned.
-  ///
-  /// Typical usage is as follows:
-  ///
-  /// ```dart
-  /// final StyleVariant variant = IconButtonTheme.variantOf(context);
-  /// ```
+  /// This is the [IconButtonThemeData.variant] returned by [of], or
+  /// [StyleVariant.material3] if that is null.
+  @Deprecated(
+    'Use IconButtonTheme.of(context).variant instead. '
+    'This feature was deprecated after material_ui v1.11.0.',
+  )
   static StyleVariant variantOf(BuildContext context) {
-    InheritedElement? element = context.getElementForInheritedWidgetOfExactType<IconButtonTheme>();
-    while (element != null) {
-      // Depend on every theme that is visited, so that a change to any of them
-      // rebuilds the dependent.
-      context.dependOnInheritedElement(element);
-      final StyleVariant? variant = (element.widget as IconButtonTheme).data.variant;
-      if (variant != null) {
-        return variant;
-      }
-      // Calling getElementForInheritedWidgetOfExactType on the element itself
-      // would return the same element, so continue the search from its parent.
-      Element? parent;
-      element.visitAncestorElements((Element ancestor) {
-        parent = ancestor;
-        return false;
-      });
-      element = parent?.getElementForInheritedWidgetOfExactType<IconButtonTheme>();
-    }
-    return Theme.of(context).iconButtonTheme.variant ?? StyleVariant.material3;
+    return of(context).variant ?? StyleVariant.material3;
   }
+
+  @override
+  InheritedElement createElement() => _IconButtonThemeElement(this);
 
   @override
   Widget wrap(BuildContext context, Widget child) {
@@ -187,4 +177,40 @@ class IconButtonTheme extends InheritedTheme {
 
   @override
   bool updateShouldNotify(IconButtonTheme oldWidget) => data != oldWidget.data;
+}
+
+// Inserts a _ResolvedIconButtonTheme below its IconButtonTheme, so that the
+// variant is inherited when the theme is built rather than looked up by every
+// IconButtonTheme.of call, and so that InheritedTheme.capture keeps it.
+class _IconButtonThemeElement extends InheritedElement {
+  _IconButtonThemeElement(IconButtonTheme super.widget);
+
+  @override
+  Widget build() {
+    IconButtonThemeData data = (widget as IconButtonTheme).data;
+    if (data.variant == null) {
+      final StyleVariant? inheritedVariant =
+          dependOnInheritedWidgetOfExactType<_ResolvedIconButtonTheme>()?.data.variant;
+      if (inheritedVariant != null) {
+        data = IconButtonThemeData(style: data.style, variant: inheritedVariant);
+      }
+    }
+    return _ResolvedIconButtonTheme(data: data, child: super.build());
+  }
+}
+
+// The data of the closest IconButtonTheme, with the variant inherited from the
+// enclosing IconButtonThemes.
+class _ResolvedIconButtonTheme extends InheritedTheme {
+  const _ResolvedIconButtonTheme({required this.data, required super.child});
+
+  final IconButtonThemeData data;
+
+  @override
+  Widget wrap(BuildContext context, Widget child) {
+    return _ResolvedIconButtonTheme(data: data, child: child);
+  }
+
+  @override
+  bool updateShouldNotify(_ResolvedIconButtonTheme oldWidget) => data != oldWidget.data;
 }

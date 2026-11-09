@@ -365,7 +365,7 @@ void main() {
     expect(getOverlayColor(tester), paints..rect(color: overlayColor.withOpacity(0.1)));
   });
 
-  group('IconButtonTheme.variantOf', () {
+  group('IconButtonTheme variant inheritance', () {
     // A square icon button uses a RoundedRectangleBorder in Material 3
     // Expressive. Material 3 ignores shapeVariant and uses a StadiumBorder.
     const buttonKey = Key('button');
@@ -391,7 +391,7 @@ void main() {
     Widget buttonWithVariant(ValueSetter<StyleVariant> onVariant) {
       return Builder(
         builder: (BuildContext context) {
-          onVariant(IconButtonTheme.variantOf(context));
+          onVariant(IconButtonTheme.of(context).variant ?? StyleVariant.material3);
           return squareButton;
         },
       );
@@ -607,6 +607,130 @@ void main() {
         expect(buttonShape(tester), isA<RoundedRectangleBorder>());
       },
     );
+
+    testWidgets('IconButtonTheme.of inherits only the variant', (WidgetTester tester) async {
+      late IconButtonThemeData data;
+      await tester.pumpWidget(
+        MaterialApp(
+          home: IconButtonTheme(
+            data: const IconButtonThemeData(
+              style: ButtonStyle(iconSize: WidgetStatePropertyAll<double>(32)),
+              variant: StyleVariant.material3Expressive,
+            ),
+            child: IconButtonTheme(
+              data: const IconButtonThemeData(style: customStyle),
+              child: Builder(
+                builder: (BuildContext context) {
+                  data = IconButtonTheme.of(context);
+                  return const SizedBox();
+                },
+              ),
+            ),
+          ),
+        ),
+      );
+
+      expect(
+        data,
+        const IconButtonThemeData(style: customStyle, variant: StyleVariant.material3Expressive),
+      );
+    });
+
+    testWidgets('IconButtonTheme.of returns the closest data when there is no variant to inherit', (
+      WidgetTester tester,
+    ) async {
+      const closestData = IconButtonThemeData(style: customStyle);
+      late IconButtonThemeData data;
+      await tester.pumpWidget(
+        MaterialApp(
+          home: IconButtonTheme(
+            data: const IconButtonThemeData(),
+            child: IconButtonTheme(
+              data: closestData,
+              child: Builder(
+                builder: (BuildContext context) {
+                  data = IconButtonTheme.of(context);
+                  return const SizedBox();
+                },
+              ),
+            ),
+          ),
+        ),
+      );
+
+      expect(data, same(closestData));
+    });
+
+    testWidgets('IconButton in a dialog keeps the inherited variant', (WidgetTester tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Material(
+            child: IconButtonTheme(
+              data: const IconButtonThemeData(variant: StyleVariant.material3Expressive),
+              child: IconButtonTheme(
+                data: const IconButtonThemeData(style: customStyle),
+                child: Builder(
+                  builder: (BuildContext context) {
+                    return TextButton(
+                      onPressed: () {
+                        showDialog<void>(
+                          context: context,
+                          builder: (BuildContext context) => const Dialog(child: squareButton),
+                        );
+                      },
+                      child: const Text('Open'),
+                    );
+                  },
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+
+      await tester.tap(find.text('Open'));
+      await tester.pumpAndSettle();
+
+      expect(buttonShape(tester), isA<RoundedRectangleBorder>());
+    });
+
+    testWidgets('the deprecated IconButtonTheme.variantOf returns the inherited variant', (
+      WidgetTester tester,
+    ) async {
+      late StyleVariant inheritedVariant;
+      late StyleVariant defaultVariant;
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Column(
+            children: <Widget>[
+              IconButtonTheme(
+                data: const IconButtonThemeData(variant: StyleVariant.material3Expressive),
+                child: IconButtonTheme(
+                  data: const IconButtonThemeData(style: customStyle),
+                  child: Builder(
+                    builder: (BuildContext context) {
+                      // ignore: deprecated_member_use_from_same_package
+                      inheritedVariant = IconButtonTheme.variantOf(context);
+                      return const SizedBox();
+                    },
+                  ),
+                ),
+              ),
+              Builder(
+                builder: (BuildContext context) {
+                  // ignore: deprecated_member_use_from_same_package
+                  defaultVariant = IconButtonTheme.variantOf(context);
+                  return const SizedBox();
+                },
+              ),
+            ],
+          ),
+        ),
+      );
+
+      expect(inheritedVariant, StyleVariant.material3Expressive);
+      expect(defaultVariant, StyleVariant.material3);
+    });
   });
 }
 
