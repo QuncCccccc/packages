@@ -1,0 +1,5 @@
+changelog: |
+  - Changes `ElevatedButtonTheme.of` to return the variant inherited from enclosing themes.
+  - Fixes `ElevatedButton` losing the inherited variant in dialogs and other routes.
+  - Deprecates `ElevatedButtonTheme.variantOf`. Use `ElevatedButtonTheme.of(context).variant` instead.
+version: minor
