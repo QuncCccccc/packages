@@ -906,6 +906,40 @@ void main() {
       expect(contents, contains('ShapeBorder? get indicatorShape => const StadiumBorder()'));
     });
 
+    test('NavigationBarTemplateM3E emits M3E NavigationBar defaults from tokens', () {
+      const template = NavigationBarTemplateM3E();
+      expect(template.name, 'Navigation Bar');
+      expect(template.parentFilePath, 'navigation_bar.dart');
+      expect(template.outputFileName, 'navigation_bar_defaults_m3e.g.dart');
+
+      final String contents = _generateContents(template);
+      expect(contents, contains('class _NavigationBarDefaultsM3E extends NavigationBarThemeData'));
+      expect(contents, contains('height: 64.0'));
+      expect(contents, contains('elevation: 3.0'));
+      expect(contents, contains('static const double itemBetweenSpace = 0.0;'));
+      expect(contents, contains('static const Size verticalIndicatorSize = Size(56.0, 32.0);'));
+      expect(contents, contains('static const double horizontalIndicatorHeight = 40.0;'));
+      expect(contents, contains('start: 16.0,'));
+      expect(contents, contains('end: 16.0,'));
+      expect(contents, contains('_destinationLayout ?? NavigationDestinationLayout.vertical'));
+      expect(contents, contains('Color? get backgroundColor => _colors.surfaceContainer;'));
+      expect(contents, contains('Color? get shadowColor => _colors.shadow;'));
+      expect(contents, contains('Color? get indicatorColor => _colors.secondaryContainer;'));
+      expect(contents, contains('ShapeBorder? get indicatorShape => const StadiumBorder()'));
+      expect(contents, contains('? _colors.onSecondaryContainer'));
+      expect(contents, contains('? _colors.secondary\n'));
+      expect(contents, contains('_colors.onSurfaceVariant.withValues(alpha: 0.38)'));
+      expect(contents, contains('NavigationDestinationLayout.vertical => _textTheme.labelMedium!'));
+      expect(
+        contents,
+        contains('NavigationDestinationLayout.horizontal => _textTheme.labelMedium!'),
+      );
+      expect(contents, contains('_colors.onSecondaryContainer.withValues(alpha: 0.08)'));
+      expect(contents, contains('_colors.onSecondaryContainer.withValues(alpha: 0.1)'));
+      expect(contents, contains('const EdgeInsets.only(top: 4.0)'));
+      expect(contents, contains('const EdgeInsetsDirectional.only(start: 4.0)'));
+    });
+
     test('NavigationDrawerTemplateM3 emits M3 NavigationDrawer defaults from tokens', () {
       const template = NavigationDrawerTemplateM3();
       final String contents = _generateContents(template);

@@ -103,6 +103,7 @@ Future<void> main(List<String> args) async {
   const MotionTemplateM3().generateFile(verbose: verbose);
   const MotionTemplateM3E().generateFile(verbose: verbose);
   const NavigationBarTemplateM3().generateFile(verbose: verbose);
+  const NavigationBarTemplateM3E().generateFile(verbose: verbose);
   const NavigationDrawerTemplateM3().generateFile(verbose: verbose);
   const NavigationRailTemplateM3().generateFile(verbose: verbose);
   const PopupMenuTemplateM3().generateFile(verbose: verbose);

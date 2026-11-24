@@ -10,6 +10,7 @@ import 'package:flutter/widgets.dart';
 
 import 'navigation_bar.dart';
 import 'theme.dart';
+import 'theme_data.dart';
 
 // Examples can assume:
 // late BuildContext context;
@@ -52,6 +53,8 @@ class NavigationBarThemeData with Diagnosticable {
     this.labelBehavior,
     this.overlayColor,
     this.labelPadding,
+    this.destinationLayout,
+    this.variant,
   });
 
   /// Overrides the default value of [NavigationBar.height].
@@ -97,6 +100,37 @@ class NavigationBarThemeData with Diagnosticable {
   /// Overrides the default value of [NavigationBar.labelPadding].
   final EdgeInsetsGeometry? labelPadding;
 
+  /// Overrides the default value of [NavigationBar.destinationLayout].
+  ///
+  /// [NavigationDestinationLayout.horizontal] is only used with the Material 3
+  /// Expressive style. See [variant].
+  final NavigationDestinationLayout? destinationLayout;
+
+  /// The style variant of Material Design used by [NavigationBar].
+  ///
+  /// Set this to [StyleVariant.material3Expressive] to opt navigation bars
+  /// into the Material 3 Expressive style.
+  ///
+  /// If null, the variant is inherited from the closest enclosing
+  /// [NavigationBarTheme] that specifies one, and then from
+  /// [ThemeData.navigationBarTheme]. If none of them specify a variant,
+  /// [NavigationBar] uses [StyleVariant.material3]. To keep a subtree on
+  /// Material 3 when an ancestor opts into Material 3 Expressive, set this to
+  /// [StyleVariant.material3].
+  ///
+  /// An enclosing [NavigationBarTheme] takes precedence over
+  /// [ThemeData.navigationBarTheme], even when a closer [Theme] specifies a
+  /// different variant. This matches [NavigationBarTheme.of], which only uses
+  /// [ThemeData.navigationBarTheme] when there is no enclosing
+  /// [NavigationBarTheme]. To change the variant of a subtree, wrap it in a
+  /// [NavigationBarTheme].
+  ///
+  /// See also:
+  ///
+  ///  * [NavigationBarTheme.variantOf], which returns the variant that
+  ///    applies at a given location.
+  final StyleVariant? variant;
+
   /// Creates a copy of this object with the given fields replaced with the
   /// new values.
   NavigationBarThemeData copyWith({
@@ -112,6 +146,8 @@ class NavigationBarThemeData with Diagnosticable {
     NavigationDestinationLabelBehavior? labelBehavior,
     WidgetStateProperty<Color?>? overlayColor,
     EdgeInsetsGeometry? labelPadding,
+    NavigationDestinationLayout? destinationLayout,
+    StyleVariant? variant,
   }) {
     return NavigationBarThemeData(
       height: height ?? this.height,
@@ -126,6 +162,8 @@ class NavigationBarThemeData with Diagnosticable {
       labelBehavior: labelBehavior ?? this.labelBehavior,
       overlayColor: overlayColor ?? this.overlayColor,
       labelPadding: labelPadding ?? this.labelPadding,
+      destinationLayout: destinationLayout ?? this.destinationLayout,
+      variant: variant ?? this.variant,
     );
   }
 
@@ -170,6 +208,8 @@ class NavigationBarThemeData with Diagnosticable {
         Color.lerp,
       ),
       labelPadding: EdgeInsetsGeometry.lerp(a?.labelPadding, b?.labelPadding, t),
+      destinationLayout: t < 0.5 ? a?.destinationLayout : b?.destinationLayout,
+      variant: t < 0.5 ? a?.variant : b?.variant,
     );
   }
 
@@ -187,6 +227,8 @@ class NavigationBarThemeData with Diagnosticable {
     labelBehavior,
     overlayColor,
     labelPadding,
+    destinationLayout,
+    variant,
   );
 
   @override
@@ -209,7 +251,9 @@ class NavigationBarThemeData with Diagnosticable {
         other.iconTheme == iconTheme &&
         other.labelBehavior == labelBehavior &&
         other.overlayColor == overlayColor &&
-        other.labelPadding == labelPadding;
+        other.labelPadding == labelPadding &&
+        other.destinationLayout == destinationLayout &&
+        other.variant == variant;
   }
 
   @override
@@ -255,6 +299,14 @@ class NavigationBarThemeData with Diagnosticable {
     properties.add(
       DiagnosticsProperty<EdgeInsetsGeometry>('labelPadding', labelPadding, defaultValue: null),
     );
+    properties.add(
+      EnumProperty<NavigationDestinationLayout>(
+        'destinationLayout',
+        destinationLayout,
+        defaultValue: null,
+      ),
+    );
+    properties.add(EnumProperty<StyleVariant>('variant', variant, defaultValue: null));
   }
 }
 
@@ -282,6 +334,10 @@ class NavigationBarTheme extends InheritedTheme {
   /// If there is no enclosing [NavigationBarTheme] widget, then
   /// [ThemeData.navigationBarTheme] is used.
   ///
+  /// The returned [NavigationBarThemeData.variant] is the value specified by
+  /// that theme, which can be null even when an ancestor specifies a variant.
+  /// Use [variantOf] to get the variant that applies at the given [context].
+  ///
   /// Typical usage is as follows:
   ///
   /// ```dart
@@ -291,6 +347,44 @@ class NavigationBarTheme extends InheritedTheme {
     final NavigationBarTheme? navigationBarTheme = context
         .dependOnInheritedWidgetOfExactType<NavigationBarTheme>();
     return navigationBarTheme?.data ?? Theme.of(context).navigationBarTheme;
+  }
+
+  /// Returns the [StyleVariant] that [NavigationBar]s use at the given
+  /// [context].
+  ///
+  /// The closest enclosing [NavigationBarTheme] whose
+  /// [NavigationBarThemeData.variant] is non-null determines the variant, so a
+  /// [NavigationBarTheme] that doesn't specify a variant inherits it from its
+  /// ancestors. If none of the enclosing [NavigationBarTheme]s specify a
+  /// variant, the variant of [ThemeData.navigationBarTheme] is used. If that is
+  /// also null, [StyleVariant.material3] is returned.
+  ///
+  /// Typical usage is as follows:
+  ///
+  /// ```dart
+  /// final StyleVariant variant = NavigationBarTheme.variantOf(context);
+  /// ```
+  static StyleVariant variantOf(BuildContext context) {
+    InheritedElement? element = context
+        .getElementForInheritedWidgetOfExactType<NavigationBarTheme>();
+    while (element != null) {
+      // Depend on every theme that is visited, so that a change to any of them
+      // rebuilds the dependent.
+      context.dependOnInheritedElement(element);
+      final StyleVariant? variant = (element.widget as NavigationBarTheme).data.variant;
+      if (variant != null) {
+        return variant;
+      }
+      // Calling getElementForInheritedWidgetOfExactType on the element itself
+      // would return the same element, so continue the search from its parent.
+      Element? parent;
+      element.visitAncestorElements((Element ancestor) {
+        parent = ancestor;
+        return false;
+      });
+      element = parent?.getElementForInheritedWidgetOfExactType<NavigationBarTheme>();
+    }
+    return Theme.of(context).navigationBarTheme.variant ?? StyleVariant.material3;
   }
 
   @override

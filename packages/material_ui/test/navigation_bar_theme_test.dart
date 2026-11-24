@@ -337,6 +337,287 @@ void main() {
     },
     tags: 'reduced-web-test-set',
   );
+
+  test('NavigationBarThemeData variant and destinationLayout default to null', () {
+    const data = NavigationBarThemeData();
+    expect(data.variant, isNull);
+    expect(data.destinationLayout, isNull);
+  });
+
+  test(
+    'NavigationBarThemeData copyWith, ==, and hashCode include variant and destinationLayout',
+    () {
+      const data = NavigationBarThemeData(
+        variant: StyleVariant.material3Expressive,
+        destinationLayout: NavigationDestinationLayout.horizontal,
+      );
+      expect(data.variant, StyleVariant.material3Expressive);
+      expect(data.destinationLayout, NavigationDestinationLayout.horizontal);
+
+      expect(
+        const NavigationBarThemeData().copyWith(
+          variant: StyleVariant.material3Expressive,
+          destinationLayout: NavigationDestinationLayout.horizontal,
+        ),
+        data,
+      );
+      expect(data.copyWith(), data);
+      expect(data.copyWith().hashCode, data.hashCode);
+      expect(data.copyWith(height: 10).variant, StyleVariant.material3Expressive);
+      expect(data.copyWith(height: 10).destinationLayout, NavigationDestinationLayout.horizontal);
+
+      final NavigationBarThemeData otherVariant = data.copyWith(variant: StyleVariant.material3);
+      expect(otherVariant.variant, StyleVariant.material3);
+      expect(otherVariant, isNot(data));
+      expect(otherVariant.hashCode, isNot(data.hashCode));
+
+      final NavigationBarThemeData otherLayout = data.copyWith(
+        destinationLayout: NavigationDestinationLayout.vertical,
+      );
+      expect(otherLayout.destinationLayout, NavigationDestinationLayout.vertical);
+      expect(otherLayout, isNot(data));
+      expect(otherLayout.hashCode, isNot(data.hashCode));
+    },
+  );
+
+  test('NavigationBarThemeData lerps variant and destinationLayout discretely', () {
+    const a = NavigationBarThemeData(
+      variant: StyleVariant.material3,
+      destinationLayout: NavigationDestinationLayout.vertical,
+    );
+    const b = NavigationBarThemeData(
+      variant: StyleVariant.material3Expressive,
+      destinationLayout: NavigationDestinationLayout.horizontal,
+    );
+
+    final NavigationBarThemeData? start = NavigationBarThemeData.lerp(a, b, 0.25);
+    expect(start?.variant, StyleVariant.material3);
+    expect(start?.destinationLayout, NavigationDestinationLayout.vertical);
+
+    final NavigationBarThemeData? middle = NavigationBarThemeData.lerp(a, b, 0.5);
+    expect(middle?.variant, StyleVariant.material3Expressive);
+    expect(middle?.destinationLayout, NavigationDestinationLayout.horizontal);
+
+    final NavigationBarThemeData? end = NavigationBarThemeData.lerp(a, b, 0.75);
+    expect(end?.variant, StyleVariant.material3Expressive);
+    expect(end?.destinationLayout, NavigationDestinationLayout.horizontal);
+
+    expect(NavigationBarThemeData.lerp(null, b, 0.25)?.variant, isNull);
+    expect(NavigationBarThemeData.lerp(null, b, 0.75)?.variant, StyleVariant.material3Expressive);
+  });
+
+  testWidgets('NavigationBarThemeData debugFillProperties includes variant and destinationLayout', (
+    WidgetTester tester,
+  ) async {
+    final builder = DiagnosticPropertiesBuilder();
+    const NavigationBarThemeData(
+      variant: StyleVariant.material3Expressive,
+      destinationLayout: NavigationDestinationLayout.horizontal,
+    ).debugFillProperties(builder);
+
+    final List<String> description = builder.properties
+        .where((DiagnosticsNode node) => !node.isFiltered(DiagnosticLevel.info))
+        .map((DiagnosticsNode node) => node.toString())
+        .toList();
+
+    expect(description, <String>['destinationLayout: horizontal', 'variant: material3Expressive']);
+  });
+
+  group('NavigationBarTheme.variantOf', () {
+    // Builds a navigation bar and reports the variant that applies to it.
+    Widget navigationBarWithVariant(ValueSetter<StyleVariant> onVariant) {
+      return Builder(
+        builder: (BuildContext context) {
+          onVariant(NavigationBarTheme.variantOf(context));
+          return NavigationBar(destinations: _destinations());
+        },
+      );
+    }
+
+    // The Material 3 Expressive navigation bar is 64 pixels tall, and the
+    // Material 3 navigation bar is 80 pixels tall.
+    const material3Height = 80.0;
+    const material3ExpressiveHeight = 64.0;
+
+    testWidgets('returns material3 when no theme specifies a variant', (WidgetTester tester) async {
+      StyleVariant? variant;
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            bottomNavigationBar: NavigationBarTheme(
+              data: const NavigationBarThemeData(indicatorColor: Color(0xff00ff00)),
+              child: navigationBarWithVariant((StyleVariant value) => variant = value),
+            ),
+          ),
+        ),
+      );
+
+      expect(variant, StyleVariant.material3);
+      expect(_barHeight(tester), material3Height);
+    });
+
+    testWidgets('returns the variant of ThemeData.navigationBarTheme', (WidgetTester tester) async {
+      StyleVariant? variant;
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: ThemeData(
+            navigationBarTheme: const NavigationBarThemeData(
+              variant: StyleVariant.material3Expressive,
+            ),
+          ),
+          home: Scaffold(
+            bottomNavigationBar: navigationBarWithVariant((StyleVariant value) => variant = value),
+          ),
+        ),
+      );
+
+      expect(variant, StyleVariant.material3Expressive);
+      expect(_barHeight(tester), material3ExpressiveHeight);
+    });
+
+    testWidgets(
+      'a nested NavigationBarTheme without a variant inherits it from a NavigationBarTheme',
+      (WidgetTester tester) async {
+        StyleVariant? variant;
+        NavigationBarThemeData? closestTheme;
+        await tester.pumpWidget(
+          MaterialApp(
+            home: Scaffold(
+              bottomNavigationBar: NavigationBarTheme(
+                data: const NavigationBarThemeData(variant: StyleVariant.material3Expressive),
+                child: NavigationBarTheme(
+                  data: const NavigationBarThemeData(indicatorColor: Color(0xff00ff00)),
+                  child: Builder(
+                    builder: (BuildContext context) {
+                      closestTheme = NavigationBarTheme.of(context);
+                      return navigationBarWithVariant((StyleVariant value) => variant = value);
+                    },
+                  ),
+                ),
+              ),
+            ),
+          ),
+        );
+
+        expect(variant, StyleVariant.material3Expressive);
+        expect(_barHeight(tester), material3ExpressiveHeight);
+        // NavigationBarTheme.of returns the closest theme as is.
+        expect(closestTheme?.variant, isNull);
+        expect(closestTheme?.indicatorColor, const Color(0xff00ff00));
+      },
+    );
+
+    testWidgets(
+      'a NavigationBarTheme without a variant inherits it from ThemeData.navigationBarTheme',
+      (WidgetTester tester) async {
+        StyleVariant? variant;
+        await tester.pumpWidget(
+          MaterialApp(
+            theme: ThemeData(
+              navigationBarTheme: const NavigationBarThemeData(
+                variant: StyleVariant.material3Expressive,
+              ),
+            ),
+            home: Scaffold(
+              bottomNavigationBar: NavigationBarTheme(
+                data: const NavigationBarThemeData(indicatorColor: Color(0xff00ff00)),
+                child: navigationBarWithVariant((StyleVariant value) => variant = value),
+              ),
+            ),
+          ),
+        );
+
+        expect(variant, StyleVariant.material3Expressive);
+        expect(_barHeight(tester), material3ExpressiveHeight);
+      },
+    );
+
+    testWidgets('an explicit variant overrides the variant of the ancestors', (
+      WidgetTester tester,
+    ) async {
+      StyleVariant? variant;
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: ThemeData(
+            navigationBarTheme: const NavigationBarThemeData(
+              variant: StyleVariant.material3Expressive,
+            ),
+          ),
+          home: Scaffold(
+            bottomNavigationBar: NavigationBarTheme(
+              data: const NavigationBarThemeData(variant: StyleVariant.material3Expressive),
+              child: NavigationBarTheme(
+                data: const NavigationBarThemeData(variant: StyleVariant.material3),
+                child: navigationBarWithVariant((StyleVariant value) => variant = value),
+              ),
+            ),
+          ),
+        ),
+      );
+
+      expect(variant, StyleVariant.material3);
+      expect(_barHeight(tester), material3Height);
+    });
+
+    testWidgets('an enclosing NavigationBarTheme takes precedence over a closer Theme', (
+      WidgetTester tester,
+    ) async {
+      StyleVariant? variant;
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            bottomNavigationBar: NavigationBarTheme(
+              data: const NavigationBarThemeData(variant: StyleVariant.material3Expressive),
+              child: Theme(
+                data: ThemeData(
+                  navigationBarTheme: const NavigationBarThemeData(variant: StyleVariant.material3),
+                ),
+                child: navigationBarWithVariant((StyleVariant value) => variant = value),
+              ),
+            ),
+          ),
+        ),
+      );
+
+      expect(variant, StyleVariant.material3Expressive);
+      expect(_barHeight(tester), material3ExpressiveHeight);
+    });
+
+    testWidgets(
+      'NavigationBar is rebuilt when a NavigationBarTheme above the closest one changes',
+      (WidgetTester tester) async {
+        final variant = ValueNotifier<StyleVariant?>(StyleVariant.material3Expressive);
+        addTearDown(variant.dispose);
+        final navigationBar = NavigationBar(destinations: _destinations());
+        await tester.pumpWidget(
+          MaterialApp(
+            home: Scaffold(
+              bottomNavigationBar: ValueListenableBuilder<StyleVariant?>(
+                valueListenable: variant,
+                // The subtree is only rebuilt through its dependency on the
+                // outer NavigationBarTheme.
+                child: NavigationBarTheme(
+                  data: const NavigationBarThemeData(indicatorColor: Color(0xff00ff00)),
+                  child: navigationBar,
+                ),
+                builder: (BuildContext context, StyleVariant? value, Widget? child) {
+                  return NavigationBarTheme(
+                    data: NavigationBarThemeData(variant: value),
+                    child: child!,
+                  );
+                },
+              ),
+            ),
+          ),
+        );
+        expect(_barHeight(tester), material3ExpressiveHeight);
+
+        variant.value = StyleVariant.material3;
+        await tester.pumpAndSettle();
+        expect(_barHeight(tester), material3Height);
+      },
+    );
+  });
 }
 
 List<NavigationDestination> _destinations() {

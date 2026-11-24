@@ -24,9 +24,11 @@ import 'material_state.dart';
 import 'navigation_bar_theme.dart';
 import 'text_theme.dart';
 import 'theme.dart';
+import 'theme_data.dart';
 import 'tooltip.dart';
 
 part 'generated/navigation_bar_defaults_m3.g.dart';
+part 'generated/navigation_bar_defaults_m3e.g.dart';
 
 const double _kIndicatorHeight = 32;
 const double _kIndicatorWidth = 64;
@@ -55,6 +57,14 @@ const double _kMaxLabelTextScaleFactor = 1.3;
 ///
 /// This widget holds a collection of destinations (usually
 /// [NavigationDestination]s).
+///
+/// To use the Material 3 Expressive style, set [NavigationBarThemeData.variant]
+/// to [StyleVariant.material3Expressive]. With the Material 3 Expressive style,
+/// that is, when [ThemeData.useMaterial3] is true and
+/// [NavigationBarThemeData.variant] is [StyleVariant.material3Expressive], the
+/// navigation bar is 64 pixels tall, and the destinations can be laid out
+/// horizontally, with each label next to its icon, by setting
+/// [destinationLayout] to [NavigationDestinationLayout.horizontal].
 ///
 /// <callout-box>
 ///
@@ -139,6 +149,7 @@ class NavigationBar extends StatelessWidget {
     this.overlayColor,
     this.labelTextStyle,
     this.labelPadding,
+    this.destinationLayout,
     this.maintainBottomViewPadding = false,
   }) : assert(destinations.length >= 2),
        assert(0 <= selectedIndex && selectedIndex < destinations.length);
@@ -191,6 +202,9 @@ class NavigationBar extends StatelessWidget {
   /// is also null, the default value is [Colors.transparent] which
   /// indicates that no drop shadow will be displayed.
   ///
+  /// With the Material 3 Expressive style, the default value is
+  /// [ColorScheme.shadow].
+  ///
   /// See [Material.shadowColor] for more details on drop shadows.
   final Color? shadowColor;
 
@@ -235,6 +249,8 @@ class NavigationBar extends StatelessWidget {
   ///
   /// If null, [NavigationBarThemeData.height] is used. If that
   /// is also null, the default is 80.
+  ///
+  /// With the Material 3 Expressive style, the default is 64.
   final double? height;
 
   /// Defines how the [destinations]' labels will be laid out and when they'll
@@ -246,10 +262,19 @@ class NavigationBar extends StatelessWidget {
   /// If null, [NavigationBarThemeData.labelBehavior] is used. If that
   /// is also null, the default is
   /// [NavigationDestinationLabelBehavior.alwaysShow].
+  ///
+  /// When the destinations are laid out horizontally, the labels are always
+  /// shown and this is ignored. See [destinationLayout].
   final NavigationDestinationLabelBehavior? labelBehavior;
 
   /// The highlight color that's typically used to indicate that
   /// the [NavigationDestination] is focused, hovered, or pressed.
+  ///
+  /// With the Material 3 Expressive style, the states that this is resolved
+  /// with include [WidgetState.selected] when the destination is selected. If
+  /// this and [NavigationBarThemeData.overlayColor] are null, the default is
+  /// [ColorScheme.onSecondaryContainer] with an opacity of 0.08 when the
+  /// destination is hovered, and 0.1 when it's focused or pressed.
   final WidgetStateProperty<Color?>? overlayColor;
 
   /// The text style of the label.
@@ -261,6 +286,10 @@ class NavigationBar extends StatelessWidget {
   /// [ColorScheme.onSurfaceVariant] with an opacity of 0.38 when the
   /// destination is disabled.
   ///
+  /// With the Material 3 Expressive style, the default text style uses
+  /// [ColorScheme.secondary] instead of [ColorScheme.onSurface] when the
+  /// destination is selected.
+  ///
   /// If [ThemeData.useMaterial3] is false, then the default text style is
   /// [TextTheme.labelSmall] with [ColorScheme.onSurface].
   final WidgetStateProperty<TextStyle?>? labelTextStyle;
@@ -270,7 +299,36 @@ class NavigationBar extends StatelessWidget {
   /// When [labelPadding] is null, [NavigationBarThemeData.labelPadding]
   /// is used. If that is also null, the default padding is 4 pixels on
   /// the top.
+  ///
+  /// When the destinations are laid out horizontally, the default padding is
+  /// 4 pixels at the start, between the icon and the label. See
+  /// [destinationLayout].
   final EdgeInsetsGeometry? labelPadding;
+
+  /// How the icon and the label of each destination are arranged.
+  ///
+  /// With [NavigationDestinationLayout.vertical], each label is below its
+  /// icon, and the destinations share the width of the navigation bar
+  /// equally.
+  ///
+  /// With [NavigationDestinationLayout.horizontal], each label is next to its
+  /// icon, and the selection indicator is behind both of them. The
+  /// destinations are as wide as their content and are centered as a group,
+  /// so the extra space is at both ends of the navigation bar. The labels are
+  /// always shown, and [labelBehavior] is ignored.
+  ///
+  /// [NavigationDestinationLayout.horizontal] is a Material 3 Expressive
+  /// option. It only takes effect when [ThemeData.useMaterial3] is true and
+  /// [NavigationBarThemeData.variant] is [StyleVariant.material3Expressive].
+  /// Otherwise, the destinations are laid out vertically.
+  ///
+  /// The navigation bar doesn't change the layout based on its width. The
+  /// Material Design guidelines recommend vertical destinations in compact
+  /// windows, and horizontal destinations in medium windows.
+  ///
+  /// If null, [NavigationBarThemeData.destinationLayout] is used. If that is
+  /// also null, the default is [NavigationDestinationLayout.vertical].
+  final NavigationDestinationLayout? destinationLayout;
 
   /// Specifies whether the underlying [SafeArea] should maintain the bottom
   /// [MediaQueryData.viewPadding] instead of the bottom [MediaQueryData.padding].
@@ -300,8 +358,48 @@ class NavigationBar extends StatelessWidget {
 
     final NavigationBarThemeData navigationBarTheme = NavigationBarTheme.of(context);
     final double effectiveHeight = height ?? navigationBarTheme.height ?? defaults.height!;
-    final NavigationDestinationLabelBehavior effectiveLabelBehavior =
-        labelBehavior ?? navigationBarTheme.labelBehavior ?? defaults.labelBehavior!;
+    final isExpressive = defaults is _NavigationBarDefaultsM3E;
+    // The horizontal layout is only available with the Material 3 Expressive
+    // style.
+    final NavigationDestinationLayout effectiveDestinationLayout = isExpressive
+        ? destinationLayout ?? navigationBarTheme.destinationLayout ?? defaults.destinationLayout
+        : NavigationDestinationLayout.vertical;
+    final isHorizontal = effectiveDestinationLayout == NavigationDestinationLayout.horizontal;
+    // The labels are always shown when the destinations are laid out
+    // horizontally.
+    final NavigationDestinationLabelBehavior effectiveLabelBehavior = isHorizontal
+        ? NavigationDestinationLabelBehavior.alwaysShow
+        : labelBehavior ?? navigationBarTheme.labelBehavior ?? defaults.labelBehavior!;
+
+    Widget buildDestination(int index) {
+      return MergeSemantics(
+        child: Semantics(
+          role: SemanticsRole.tab,
+          selected: index == selectedIndex,
+          child: _SelectableAnimatedBuilder(
+            duration: animationDuration ?? const Duration(milliseconds: 500),
+            isSelected: index == selectedIndex,
+            builder: (BuildContext context, Animation<double> animation) {
+              return _NavigationDestinationInfo(
+                index: index,
+                selectedIndex: selectedIndex,
+                totalNumberOfDestinations: destinations.length,
+                selectedAnimation: animation,
+                labelBehavior: effectiveLabelBehavior,
+                destinationLayout: effectiveDestinationLayout,
+                indicatorColor: indicatorColor,
+                indicatorShape: indicatorShape,
+                overlayColor: overlayColor,
+                onTap: _handleTap(index),
+                labelTextStyle: labelTextStyle,
+                labelPadding: labelPadding,
+                child: destinations[index],
+              );
+            },
+          ),
+        ),
+      );
+    }
 
     return Material(
       color: backgroundColor ?? navigationBarTheme.backgroundColor ?? defaults.backgroundColor!,
@@ -318,36 +416,16 @@ class NavigationBar extends StatelessWidget {
           child: SizedBox(
             height: effectiveHeight,
             child: Row(
+              // Horizontal destinations are as wide as their content, and are
+              // centered as a group.
+              mainAxisAlignment: isHorizontal ? MainAxisAlignment.center : MainAxisAlignment.start,
+              spacing: isExpressive ? _NavigationBarDefaultsM3E.itemBetweenSpace : 0.0,
               children: <Widget>[
                 for (int i = 0; i < destinations.length; i++)
-                  Expanded(
-                    child: MergeSemantics(
-                      child: Semantics(
-                        role: SemanticsRole.tab,
-                        selected: i == selectedIndex,
-                        child: _SelectableAnimatedBuilder(
-                          duration: animationDuration ?? const Duration(milliseconds: 500),
-                          isSelected: i == selectedIndex,
-                          builder: (BuildContext context, Animation<double> animation) {
-                            return _NavigationDestinationInfo(
-                              index: i,
-                              selectedIndex: selectedIndex,
-                              totalNumberOfDestinations: destinations.length,
-                              selectedAnimation: animation,
-                              labelBehavior: effectiveLabelBehavior,
-                              indicatorColor: indicatorColor,
-                              indicatorShape: indicatorShape,
-                              overlayColor: overlayColor,
-                              onTap: _handleTap(i),
-                              labelTextStyle: labelTextStyle,
-                              labelPadding: labelPadding,
-                              child: destinations[i],
-                            );
-                          },
-                        ),
-                      ),
-                    ),
-                  ),
+                  if (isHorizontal)
+                    Flexible(child: buildDestination(i))
+                  else
+                    Expanded(child: buildDestination(i)),
               ],
             ),
           ),
@@ -379,9 +457,33 @@ enum NavigationDestinationLabelBehavior {
   onlyShowSelected,
 }
 
+/// Specifies how the icon and the label of each destination in a
+/// [NavigationBar] are arranged.
+///
+/// See also:
+///
+///  * [NavigationBar.destinationLayout], which describes how the destinations
+///    are laid out in each layout.
+enum NavigationDestinationLayout {
+  /// Each label is below its icon, and the destinations share the width of
+  /// the navigation bar equally.
+  vertical,
+
+  /// Each label is next to its icon, and the selection indicator is behind
+  /// both of them. The destinations are as wide as their content and are
+  /// centered as a group.
+  ///
+  /// This layout is only used with the Material 3 Expressive style, that is,
+  /// when [ThemeData.useMaterial3] is true and
+  /// [NavigationBarThemeData.variant] is [StyleVariant.material3Expressive].
+  /// The labels are always shown with this layout.
+  horizontal,
+}
+
 /// A Material 3 [NavigationBar] destination.
 ///
-/// Displays a label below an icon. Use with [NavigationBar.destinations].
+/// Displays a label below an icon, or next to it when the destinations are
+/// laid out horizontally. Use with [NavigationBar.destinations].
 ///
 /// See also:
 ///
@@ -427,6 +529,9 @@ class NavigationDestination extends StatelessWidget {
   /// [ColorScheme.onSurfaceVariant] when the destination is unselected. If
   /// [ThemeData.useMaterial3] is false, then the default text style will use
   /// [TextTheme.labelSmall] with [ColorScheme.onSurface].
+  ///
+  /// With the Material 3 Expressive style, the default text style uses
+  /// [ColorScheme.secondary] when the destination is selected.
   final String label;
 
   /// The text to display in the tooltip for this [NavigationDestination], when
@@ -450,8 +555,19 @@ class NavigationDestination extends StatelessWidget {
     const disabledState = <WidgetState>{WidgetState.disabled};
 
     final NavigationBarThemeData navigationBarTheme = NavigationBarTheme.of(context);
-    final NavigationBarThemeData defaults = _defaultsFor(context);
+    final NavigationBarThemeData defaults = _defaultsFor(context, info.destinationLayout);
     final Animation<double> animation = info.selectedAnimation;
+    final isHorizontal = info.destinationLayout == NavigationDestinationLayout.horizontal;
+
+    Widget buildIndicator(Size size) {
+      return NavigationIndicator(
+        animation: animation,
+        color: info.indicatorColor ?? navigationBarTheme.indicatorColor ?? defaults.indicatorColor!,
+        shape: info.indicatorShape ?? navigationBarTheme.indicatorShape ?? defaults.indicatorShape!,
+        width: size.width,
+        height: size.height,
+      );
+    }
 
     return _NavigationDestinationBuilder(
       label: label,
@@ -476,30 +592,25 @@ class NavigationDestination extends StatelessWidget {
           data: enabled ? unselectedIconTheme : disabledIconTheme,
           child: icon,
         );
+        final Widget iconWidget = _StatusTransitionWidgetBuilder(
+          animation: animation,
+          builder: (BuildContext context, Widget? child) {
+            return animation.isForwardOrCompleted ? selectedIconWidget : unselectedIconWidget;
+          },
+        );
 
+        // When the destinations are laid out horizontally, the indicator is
+        // behind both the icon and the label. See buildIndicator below.
+        if (isHorizontal) {
+          return iconWidget;
+        }
         return Stack(
           alignment: Alignment.center,
-          children: <Widget>[
-            NavigationIndicator(
-              animation: animation,
-              color:
-                  info.indicatorColor ??
-                  navigationBarTheme.indicatorColor ??
-                  defaults.indicatorColor!,
-              shape:
-                  info.indicatorShape ??
-                  navigationBarTheme.indicatorShape ??
-                  defaults.indicatorShape!,
-            ),
-            _StatusTransitionWidgetBuilder(
-              animation: animation,
-              builder: (BuildContext context, Widget? child) {
-                return animation.isForwardOrCompleted ? selectedIconWidget : unselectedIconWidget;
-              },
-            ),
-          ],
+          children: <Widget>[buildIndicator(_verticalIndicatorSize(defaults)), iconWidget],
         );
       },
+      // The indicator fills the space behind the icon and the label.
+      buildIndicator: isHorizontal ? (BuildContext context) => buildIndicator(Size.infinite) : null,
       buildLabel: (BuildContext context) {
         final TextStyle? effectiveSelectedLabelTextStyle =
             info.labelTextStyle?.resolve(selectedState) ??
@@ -555,6 +666,7 @@ class _NavigationDestinationBuilder extends StatefulWidget {
   const _NavigationDestinationBuilder({
     required this.buildIcon,
     required this.buildLabel,
+    this.buildIndicator,
     required this.label,
     this.tooltip,
     this.enabled = true,
@@ -584,6 +696,17 @@ class _NavigationDestinationBuilder extends StatefulWidget {
   /// animation is decreasing or dismissed.
   final WidgetBuilder buildLabel;
 
+  /// Builds the selection indicator for a destination whose icon and label are
+  /// laid out horizontally.
+  ///
+  /// With [NavigationDestinationLayout.horizontal], the indicator fills the
+  /// space behind both the icon and the label, so it's built separately from
+  /// them. This must be non-null with that layout.
+  ///
+  /// With [NavigationDestinationLayout.vertical], [buildIcon] builds the
+  /// indicator behind the icon, and this is ignored.
+  final WidgetBuilder? buildIndicator;
+
   /// The text value of what is in the label widget, this is required for
   /// semantics so that screen readers and tooltips can read the proper label.
   final String label;
@@ -612,7 +735,9 @@ class _NavigationDestinationBuilderState extends State<_NavigationDestinationBui
   Widget build(BuildContext context) {
     final _NavigationDestinationInfo info = _NavigationDestinationInfo.of(context);
     final NavigationBarThemeData navigationBarTheme = NavigationBarTheme.of(context);
-    final NavigationBarThemeData defaults = _defaultsFor(context);
+    final NavigationBarThemeData defaults = _defaultsFor(context, info.destinationLayout);
+    final WidgetStateProperty<Color?>? overlayColor =
+        info.overlayColor ?? navigationBarTheme.overlayColor ?? defaults.overlayColor;
 
     return _NavigationBarDestinationSemantics(
       enabled: widget.enabled,
@@ -623,19 +748,40 @@ class _NavigationDestinationBuilderState extends State<_NavigationDestinationBui
           labelBehavior: info.labelBehavior,
           customBorder:
               info.indicatorShape ?? navigationBarTheme.indicatorShape ?? defaults.indicatorShape,
-          overlayColor: info.overlayColor ?? navigationBarTheme.overlayColor,
+          // A circular highlight wouldn't cover the indicator of a horizontal
+          // destination, which can be much wider than it is tall.
+          highlightShape: switch (info.destinationLayout) {
+            NavigationDestinationLayout.vertical => BoxShape.circle,
+            NavigationDestinationLayout.horizontal => BoxShape.rectangle,
+          },
+          // With the Material 3 Expressive style, the overlay color of the
+          // selected destination is resolved with WidgetState.selected.
+          overlayColor:
+              defaults is _NavigationBarDefaultsM3E &&
+                  overlayColor != null &&
+                  info.index == info.selectedIndex
+              ? _selectedOverlayColor(overlayColor)
+              : overlayColor,
           onTap: widget.enabled ? info.onTap : null,
-          child: Row(
-            children: <Widget>[
-              Expanded(
-                child: _NavigationBarDestinationLayout(
-                  icon: widget.buildIcon(context),
-                  iconKey: iconKey,
-                  label: widget.buildLabel(context),
+          child: switch (info.destinationLayout) {
+            NavigationDestinationLayout.vertical => Row(
+              children: <Widget>[
+                Expanded(
+                  child: _NavigationBarDestinationLayout(
+                    icon: widget.buildIcon(context),
+                    iconKey: iconKey,
+                    label: widget.buildLabel(context),
+                  ),
                 ),
-              ),
-            ],
-          ),
+              ],
+            ),
+            NavigationDestinationLayout.horizontal => _NavigationBarHorizontalDestinationLayout(
+              indicator: widget.buildIndicator!(context),
+              icon: widget.buildIcon(context),
+              indicatorKey: iconKey,
+              label: widget.buildLabel(context),
+            ),
+          },
         ),
       ),
     );
@@ -648,6 +794,7 @@ class _IndicatorInkWell extends InkResponse {
     required this.labelBehavior,
     super.overlayColor,
     super.customBorder,
+    super.highlightShape,
     super.onTap,
     super.child,
   }) : super(containedInkWell: true, highlightColor: Colors.transparent);
@@ -679,6 +826,7 @@ class _NavigationDestinationInfo extends InheritedWidget {
     required this.totalNumberOfDestinations,
     required this.selectedAnimation,
     required this.labelBehavior,
+    required this.destinationLayout,
     required this.indicatorColor,
     required this.indicatorShape,
     required this.overlayColor,
@@ -740,6 +888,12 @@ class _NavigationDestinationInfo extends InheritedWidget {
   /// label, or hide all labels.
   final NavigationDestinationLabelBehavior labelBehavior;
 
+  /// Determines how the icon and the label of the destination are arranged.
+  ///
+  /// This is only [NavigationDestinationLayout.horizontal] when the navigation
+  /// bar uses the Material 3 Expressive style.
+  final NavigationDestinationLayout destinationLayout;
+
   /// The color of the selection indicator.
   ///
   /// This is used by destinations to override the indicator color.
@@ -794,6 +948,7 @@ class _NavigationDestinationInfo extends InheritedWidget {
         totalNumberOfDestinations != oldWidget.totalNumberOfDestinations ||
         selectedAnimation != oldWidget.selectedAnimation ||
         labelBehavior != oldWidget.labelBehavior ||
+        destinationLayout != oldWidget.destinationLayout ||
         onTap != oldWidget.onTap;
   }
 }
@@ -965,6 +1120,73 @@ class _NavigationBarDestinationLayout extends StatelessWidget {
           ],
         );
       },
+    );
+  }
+}
+
+/// Widget that lays out the icon and the label of a navigation bar destination
+/// side by side, in front of the selection indicator.
+///
+/// This is used with [NavigationDestinationLayout.horizontal]. The destination
+/// is as wide as the indicator, which is as wide as the icon and the label plus
+/// [_NavigationBarDefaultsM3E.horizontalIndicatorPadding].
+class _NavigationBarHorizontalDestinationLayout extends StatelessWidget {
+  const _NavigationBarHorizontalDestinationLayout({
+    required this.indicator,
+    required this.icon,
+    required this.indicatorKey,
+    required this.label,
+  });
+
+  /// The selection indicator, which fills the space behind the icon and the
+  /// label.
+  final Widget indicator;
+
+  /// The icon widget that sits at the start of the indicator.
+  ///
+  /// See [NavigationDestination.icon].
+  final Widget icon;
+
+  /// The global key for the indicator of this destination.
+  ///
+  /// This is used by the [_IndicatorInkWell] to determine the position of the
+  /// indicator.
+  final GlobalKey indicatorKey;
+
+  /// The label widget that sits next to the icon.
+  ///
+  /// See [NavigationDestination.label].
+  final Widget label;
+
+  @override
+  Widget build(BuildContext context) {
+    return Align(
+      // Size the destination to its content, and center it vertically.
+      widthFactor: 1.0,
+      child: KeyedSubtree(
+        key: indicatorKey,
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(
+            minHeight: _NavigationBarDefaultsM3E.horizontalIndicatorHeight,
+          ),
+          child: Stack(
+            alignment: Alignment.center,
+            children: <Widget>[
+              Positioned.fill(child: indicator),
+              Padding(
+                padding: _NavigationBarDefaultsM3E.horizontalIndicatorPadding,
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    icon,
+                    Flexible(child: label),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }
@@ -1397,10 +1619,34 @@ class _CurvedAnimationBuilderState extends State<_CurvedAnimationBuilder> {
   }
 }
 
-NavigationBarThemeData _defaultsFor(BuildContext context) {
-  return Theme.of(context).useMaterial3
-      ? _NavigationBarDefaultsM3(context)
-      : _NavigationBarDefaultsM2(context);
+NavigationBarThemeData _defaultsFor(
+  BuildContext context, [
+  NavigationDestinationLayout? destinationLayout,
+]) {
+  if (!Theme.of(context).useMaterial3) {
+    return _NavigationBarDefaultsM2(context);
+  }
+  return switch (NavigationBarTheme.variantOf(context)) {
+    StyleVariant.material3 => _NavigationBarDefaultsM3(context),
+    StyleVariant.material3Expressive => _NavigationBarDefaultsM3E(context, destinationLayout),
+  };
+}
+
+// The size of the indicator behind the icon when the destinations are laid out
+// vertically.
+Size _verticalIndicatorSize(NavigationBarThemeData defaults) {
+  return switch (defaults) {
+    _NavigationBarDefaultsM3E() => _NavigationBarDefaultsM3E.verticalIndicatorSize,
+    _ => const Size(_kIndicatorWidth, _kIndicatorHeight),
+  };
+}
+
+// Returns an overlay color that resolves the given overlay color with
+// WidgetState.selected added to the states.
+WidgetStateProperty<Color?> _selectedOverlayColor(WidgetStateProperty<Color?> overlayColor) {
+  return WidgetStateProperty.resolveWith<Color?>((Set<WidgetState> states) {
+    return overlayColor.resolve(<WidgetState>{...states, WidgetState.selected});
+  });
 }
 
 // Hand coded defaults based on Material Design 2.

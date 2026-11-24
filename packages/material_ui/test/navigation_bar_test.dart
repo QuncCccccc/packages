@@ -1763,6 +1763,669 @@ void main() {
     );
     expect(tester.getSize(find.byType(NavigationBar)), Size.zero);
   });
+
+  group('Material 3 Expressive', () {
+    ThemeData m3eTheme({NavigationDestinationLayout? destinationLayout}) {
+      return ThemeData(
+        navigationBarTheme: NavigationBarThemeData(
+          variant: StyleVariant.material3Expressive,
+          destinationLayout: destinationLayout,
+        ),
+      );
+    }
+
+    const homeKey = Key('home');
+    const searchKey = Key('search');
+    const settingsKey = Key('settings');
+    const keys = <Key>[homeKey, searchKey, settingsKey];
+    const destinations = <Widget>[
+      NavigationDestination(
+        key: homeKey,
+        icon: Icon(Icons.home_outlined),
+        selectedIcon: Icon(Icons.home),
+        label: 'Home',
+      ),
+      NavigationDestination(key: searchKey, icon: Icon(Icons.search), label: 'Search'),
+      NavigationDestination(
+        key: settingsKey,
+        enabled: false,
+        icon: Icon(Icons.settings),
+        label: 'Settings',
+      ),
+    ];
+    const icons = <IconData>[Icons.home, Icons.search, Icons.settings];
+    const labels = <String>['Home', 'Search', 'Settings'];
+
+    Widget buildNavigationBar({
+      required ThemeData theme,
+      int selectedIndex = 0,
+      NavigationDestinationLayout? destinationLayout,
+      NavigationDestinationLabelBehavior? labelBehavior,
+      WidgetStateProperty<Color?>? overlayColor,
+      ValueChanged<int>? onDestinationSelected,
+      TextDirection textDirection = TextDirection.ltr,
+    }) {
+      return MaterialApp(
+        theme: theme,
+        home: Directionality(
+          textDirection: textDirection,
+          child: Scaffold(
+            bottomNavigationBar: NavigationBar(
+              selectedIndex: selectedIndex,
+              destinationLayout: destinationLayout,
+              labelBehavior: labelBehavior,
+              overlayColor: overlayColor,
+              onDestinationSelected: onDestinationSelected ?? (int index) {},
+              destinations: destinations,
+            ),
+          ),
+        ),
+      );
+    }
+
+    // The bounds of the indicator of the destination at the given index.
+    //
+    // The bounds don't include the scale transform that hides the indicator of
+    // unselected destinations.
+    Rect indicatorRect(WidgetTester tester, int index) {
+      return tester.getRect(find.byType(NavigationIndicator).at(index));
+    }
+
+    // Whether the label is fully visible, that is, it isn't faded out by the
+    // label behavior.
+    bool isLabelVisible(WidgetTester tester, String label) {
+      return tester
+          .widgetList<FadeTransition>(
+            find.ancestor(of: find.text(label), matching: find.byType(FadeTransition)),
+          )
+          .every((FadeTransition transition) => transition.opacity.value == 1.0);
+    }
+
+    RenderObject inkFeatures(WidgetTester tester) {
+      return tester.allRenderObjects.firstWhere(
+        (RenderObject object) => object.runtimeType.toString() == '_RenderInkFeatures',
+      );
+    }
+
+    // Expects the label to use the font of TextTheme.labelMedium.
+    //
+    // The text geometry, such as the font size, is only added to the theme by
+    // Theme.of, so the expected style comes from the theme in the tree.
+    void expectLabelMediumFont(WidgetTester tester, String label) {
+      final TextStyle labelMedium = Theme.of(tester.element(find.byType(NavigationBar)))
+          .textTheme
+          .labelMedium!;
+      final TextStyle style = _getLabelStyle(tester, label);
+      expect(style.fontSize, labelMedium.fontSize);
+      expect(style.height, labelMedium.height);
+      expect(style.fontWeight, labelMedium.fontWeight);
+      expect(style.letterSpacing, labelMedium.letterSpacing);
+    }
+
+    testWidgets('NavigationBar uses the Material 3 Expressive defaults', (
+      WidgetTester tester,
+    ) async {
+      final ThemeData theme = m3eTheme();
+      final ColorScheme colors = theme.colorScheme;
+      await tester.pumpWidget(buildNavigationBar(theme: theme));
+
+      final Material material = _getMaterial(tester);
+      expect(material.color, colors.surfaceContainer);
+      expect(material.elevation, 3);
+      expect(material.shadowColor, colors.shadow);
+      expect(material.surfaceTintColor, Colors.transparent);
+      expect(tester.getSize(find.byType(NavigationBar)).height, 64);
+
+      expect(_getIndicatorDecoration(tester)?.color, colors.secondaryContainer);
+      expect(_getIndicatorDecoration(tester)?.shape, const StadiumBorder());
+      for (var i = 0; i < destinations.length; i++) {
+        expect(indicatorRect(tester, i).size, const Size(56, 32));
+      }
+
+      // The first destination is selected, and the last one is disabled.
+      expect(_getIconStyle(tester, Icons.home).color, colors.onSecondaryContainer);
+      expect(_getIconStyle(tester, Icons.search).color, colors.onSurfaceVariant);
+      expect(
+        _getIconStyle(tester, Icons.settings).color,
+        colors.onSurfaceVariant.withValues(alpha: 0.38),
+      );
+      for (final icon in icons) {
+        expect(_getIconStyle(tester, icon).fontSize, 24);
+      }
+
+      expect(_getLabelStyle(tester, 'Home').color, colors.secondary);
+      expect(_getLabelStyle(tester, 'Search').color, colors.onSurfaceVariant);
+      expect(
+        _getLabelStyle(tester, 'Settings').color,
+        colors.onSurfaceVariant.withValues(alpha: 0.38),
+      );
+      for (final label in labels) {
+        expectLabelMediumFont(tester, label);
+        expect(_getLabelPadding(tester, label), const EdgeInsets.only(top: 4));
+        expect(isLabelVisible(tester, label), isTrue);
+      }
+    });
+
+    testWidgets('NavigationBar uses the Material 3 Expressive overlay colors', (
+      WidgetTester tester,
+    ) async {
+      tester.binding.focusManager.highlightStrategy = FocusHighlightStrategy.alwaysTraditional;
+      final ThemeData theme = m3eTheme();
+      final Color stateLayerColor = theme.colorScheme.onSecondaryContainer;
+      await tester.pumpWidget(buildNavigationBar(theme: theme));
+
+      // The first destination is selected, and the second one isn't.
+      for (final index in <int>[0, 1]) {
+        final TestGesture gesture = await tester.createGesture(kind: PointerDeviceKind.mouse);
+        await gesture.addPointer(location: tester.getCenter(find.byIcon(icons[index])));
+        await tester.pumpAndSettle();
+        expect(
+          inkFeatures(tester),
+          paints..circle(color: stateLayerColor.withValues(alpha: 0.08)),
+          reason: 'Hovered destination $index',
+        );
+
+        await gesture.down(tester.getCenter(find.byIcon(icons[index])));
+        await tester.pumpAndSettle();
+        expect(
+          inkFeatures(tester),
+          paints
+            ..circle()
+            ..circle(color: stateLayerColor.withValues(alpha: 0.1)),
+          reason: 'Pressed destination $index',
+        );
+
+        await gesture.up();
+        await gesture.removePointer();
+        await tester.pumpAndSettle();
+      }
+
+      // Press tab to focus the first destination.
+      await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+      await tester.pumpAndSettle();
+      expect(
+        inkFeatures(tester),
+        paints..circle(color: stateLayerColor.withValues(alpha: 0.1)),
+        reason: 'Focused destination',
+      );
+    });
+
+    testWidgets('The overlay color of the selected destination is resolved with selected', (
+      WidgetTester tester,
+    ) async {
+      const selectedColor = Color(0xffff0000);
+      const unselectedColor = Color(0xff0000ff);
+      final overlayColor = WidgetStateProperty<Color?>.fromMap(<WidgetStatesConstraint, Color?>{
+        WidgetState.selected & WidgetState.hovered: selectedColor,
+        WidgetState.hovered: unselectedColor,
+      });
+
+      Future<void> expectHoverColor(int index, Color color) async {
+        final TestGesture gesture = await tester.createGesture(kind: PointerDeviceKind.mouse);
+        await gesture.addPointer(location: tester.getCenter(find.byIcon(icons[index])));
+        await tester.pumpAndSettle();
+        expect(inkFeatures(tester), paints..circle(color: color));
+        await gesture.removePointer();
+        await tester.pumpAndSettle();
+      }
+
+      final ThemeData theme = m3eTheme();
+      await tester.pumpWidget(buildNavigationBar(theme: theme, overlayColor: overlayColor));
+      await expectHoverColor(0, selectedColor);
+      await expectHoverColor(1, unselectedColor);
+
+      // With the Material 3 style, the states don't include selected.
+      final m3Theme = ThemeData();
+      await tester.pumpWidget(buildNavigationBar(theme: m3Theme, overlayColor: overlayColor));
+      await tester.pumpAndSettle();
+      await expectHoverColor(0, unselectedColor);
+      await expectHoverColor(1, unselectedColor);
+    });
+
+    testWidgets('Vertical destinations share the width of the navigation bar', (
+      WidgetTester tester,
+    ) async {
+      final ThemeData theme = m3eTheme();
+      await tester.pumpWidget(buildNavigationBar(theme: theme));
+
+      final Rect bar = tester.getRect(find.byType(NavigationBar));
+      for (var i = 0; i < destinations.length; i++) {
+        final Rect destination = tester.getRect(find.byKey(keys[i]));
+        final Rect indicator = indicatorRect(tester, i);
+        final Rect icon = tester.getRect(find.byIcon(icons[i]));
+        final Rect label = tester.getRect(find.text(labels[i]));
+
+        expect(destination.width, moreOrLessEquals(bar.width / destinations.length));
+        expect(destination.left, moreOrLessEquals(bar.left + i * bar.width / destinations.length));
+        expect(destination.height, 64);
+
+        // The icon is centered in the indicator, and the label is 4 pixels
+        // below the indicator.
+        expect(indicator.size, const Size(56, 32));
+        expect(indicator.center.dx, moreOrLessEquals(destination.center.dx));
+        expect(icon.center, offsetMoreOrLessEquals(indicator.center));
+        expect(label.top, moreOrLessEquals(indicator.bottom + 4));
+        expect(label.center.dx, moreOrLessEquals(destination.center.dx));
+
+        // The indicator and the label are centered vertically.
+        expect(indicator.top - bar.top, moreOrLessEquals(bar.bottom - label.bottom));
+      }
+    });
+
+    testWidgets('Horizontal destinations are as wide as their content and centered', (
+      WidgetTester tester,
+    ) async {
+      final ThemeData theme = m3eTheme();
+      await tester.pumpWidget(
+        buildNavigationBar(theme: theme, destinationLayout: NavigationDestinationLayout.horizontal),
+      );
+
+      final Rect bar = tester.getRect(find.byType(NavigationBar));
+      expect(bar.height, 64);
+
+      for (var i = 0; i < destinations.length; i++) {
+        final Rect destination = tester.getRect(find.byKey(keys[i]));
+        final Rect indicator = indicatorRect(tester, i);
+        final Rect icon = tester.getRect(find.byIcon(icons[i]));
+        final Rect label = tester.getRect(find.text(labels[i]));
+
+        // The destination is as wide as its indicator, which is 40 pixels
+        // tall and centered vertically in the navigation bar.
+        expect(destination.width, moreOrLessEquals(indicator.width));
+        expect(destination.left, moreOrLessEquals(indicator.left));
+        expect(destination.height, 64);
+        expect(indicator.height, 40);
+        expect(indicator.center.dy, moreOrLessEquals(bar.center.dy));
+
+        // The icon is at the start of the indicator, and the label is next to
+        // it. Both are centered vertically.
+        expect(icon.left, moreOrLessEquals(indicator.left + 16));
+        expect(label.left, moreOrLessEquals(icon.right + 4));
+        expect(label.right, moreOrLessEquals(indicator.right - 16));
+        expect(icon.center.dy, moreOrLessEquals(indicator.center.dy));
+        expect(label.center.dy, moreOrLessEquals(indicator.center.dy));
+
+        if (i > 0) {
+          expect(destination.left, moreOrLessEquals(tester.getRect(find.byKey(keys[i - 1])).right));
+        }
+      }
+
+      // The destinations are centered as a group, with the extra space at both
+      // ends of the navigation bar.
+      final Rect first = tester.getRect(find.byKey(keys.first));
+      final Rect last = tester.getRect(find.byKey(keys.last));
+      expect(first.left - bar.left, greaterThan(0));
+      expect(first.left - bar.left, moreOrLessEquals(bar.right - last.right));
+    });
+
+    testWidgets('Horizontal destinations use the Material 3 Expressive defaults', (
+      WidgetTester tester,
+    ) async {
+      final ThemeData theme = m3eTheme(destinationLayout: NavigationDestinationLayout.horizontal);
+      final ColorScheme colors = theme.colorScheme;
+      await tester.pumpWidget(buildNavigationBar(theme: theme));
+
+      final Material material = _getMaterial(tester);
+      expect(material.color, colors.surfaceContainer);
+      expect(material.elevation, 3);
+      expect(material.shadowColor, colors.shadow);
+      expect(tester.getSize(find.byType(NavigationBar)).height, 64);
+      expect(_getIndicatorDecoration(tester)?.color, colors.secondaryContainer);
+      expect(_getIndicatorDecoration(tester)?.shape, const StadiumBorder());
+
+      expect(_getIconStyle(tester, Icons.home).color, colors.onSecondaryContainer);
+      expect(_getIconStyle(tester, Icons.search).color, colors.onSurfaceVariant);
+      expect(
+        _getIconStyle(tester, Icons.settings).color,
+        colors.onSurfaceVariant.withValues(alpha: 0.38),
+      );
+
+      expect(_getLabelStyle(tester, 'Home').color, colors.secondary);
+      expect(_getLabelStyle(tester, 'Search').color, colors.onSurfaceVariant);
+      expect(
+        _getLabelStyle(tester, 'Settings').color,
+        colors.onSurfaceVariant.withValues(alpha: 0.38),
+      );
+      for (final label in labels) {
+        expectLabelMediumFont(tester, label);
+        expect(_getLabelPadding(tester, label), const EdgeInsetsDirectional.only(start: 4));
+      }
+    });
+
+    testWidgets('The ink of horizontal destinations fills the indicator', (
+      WidgetTester tester,
+    ) async {
+      final ThemeData theme = m3eTheme();
+      await tester.pumpWidget(
+        buildNavigationBar(theme: theme, destinationLayout: NavigationDestinationLayout.horizontal),
+      );
+
+      final TestGesture gesture = await tester.createGesture(kind: PointerDeviceKind.mouse);
+      await gesture.addPointer(location: tester.getCenter(find.text('Search')));
+      await tester.pumpAndSettle();
+
+      // The ink is painted in the coordinates of the navigation bar's Material.
+      final Offset barOrigin = tester.getTopLeft(find.byType(NavigationBar));
+      final Rect indicator = indicatorRect(tester, 1).shift(-barOrigin);
+      expect(
+        inkFeatures(tester),
+        paints
+          ..clipPath(
+            pathMatcher: isPathThat(
+              includes: <Offset>[
+                indicator.center,
+                indicator.centerLeft + const Offset(1, 0),
+                indicator.centerRight - const Offset(1, 0),
+                indicator.topCenter + const Offset(0, 1),
+                indicator.bottomCenter - const Offset(0, 1),
+              ],
+              excludes: <Offset>[
+                indicator.centerLeft - const Offset(1, 0),
+                indicator.centerRight + const Offset(1, 0),
+                indicator.topCenter - const Offset(0, 1),
+                indicator.bottomCenter + const Offset(0, 1),
+                // The corners are rounded.
+                indicator.topLeft + const Offset(1, 1),
+                indicator.bottomRight - const Offset(1, 1),
+              ],
+            ),
+          )
+          ..rect(
+            rect: indicator,
+            color: theme.colorScheme.onSecondaryContainer.withValues(alpha: 0.08),
+          ),
+      );
+    });
+
+    testWidgets('Horizontal destinations always show their labels', (WidgetTester tester) async {
+      final ThemeData theme = m3eTheme();
+      for (final NavigationDestinationLabelBehavior labelBehavior
+          in NavigationDestinationLabelBehavior.values) {
+        await tester.pumpWidget(
+          buildNavigationBar(
+            theme: theme,
+            destinationLayout: NavigationDestinationLayout.horizontal,
+            labelBehavior: labelBehavior,
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        for (var i = 0; i < destinations.length; i++) {
+          expect(isLabelVisible(tester, labels[i]), isTrue, reason: '$labelBehavior');
+          expect(
+            tester.getRect(find.text(labels[i])).left,
+            greaterThan(tester.getRect(find.byIcon(icons[i])).right),
+            reason: '$labelBehavior',
+          );
+        }
+      }
+
+      // The label behavior is used when the destinations are laid out
+      // vertically.
+      await tester.pumpWidget(
+        buildNavigationBar(
+          theme: theme,
+          labelBehavior: NavigationDestinationLabelBehavior.alwaysHide,
+        ),
+      );
+      await tester.pumpAndSettle();
+      for (final label in labels) {
+        expect(isLabelVisible(tester, label), isFalse);
+      }
+    });
+
+    testWidgets('Horizontal destinations can be selected', (WidgetTester tester) async {
+      var selectedIndex = 0;
+      final ThemeData theme = m3eTheme();
+      await tester.pumpWidget(
+        buildNavigationBar(
+          theme: theme,
+          destinationLayout: NavigationDestinationLayout.horizontal,
+          onDestinationSelected: (int index) => selectedIndex = index,
+        ),
+      );
+
+      await tester.tap(find.text('Search'));
+      expect(selectedIndex, 1);
+      await tester.tap(find.byIcon(Icons.home));
+      expect(selectedIndex, 0);
+      // The last destination is disabled.
+      await tester.tap(find.text('Settings'));
+      expect(selectedIndex, 0);
+    });
+
+    testWidgets('Horizontal destinations support right-to-left', (WidgetTester tester) async {
+      final ThemeData theme = m3eTheme();
+      await tester.pumpWidget(
+        buildNavigationBar(
+          theme: theme,
+          destinationLayout: NavigationDestinationLayout.horizontal,
+          textDirection: TextDirection.rtl,
+        ),
+      );
+
+      final Rect bar = tester.getRect(find.byType(NavigationBar));
+      for (var i = 0; i < destinations.length; i++) {
+        final Rect destination = tester.getRect(find.byKey(keys[i]));
+        final Rect indicator = indicatorRect(tester, i);
+        final Rect icon = tester.getRect(find.byIcon(icons[i]));
+        final Rect label = tester.getRect(find.text(labels[i]));
+
+        // The icon is at the start, which is the right side, of the indicator.
+        expect(destination.width, moreOrLessEquals(indicator.width));
+        expect(icon.right, moreOrLessEquals(indicator.right - 16));
+        expect(label.right, moreOrLessEquals(icon.left - 4));
+        expect(label.left, moreOrLessEquals(indicator.left + 16));
+
+        // The first destination is on the right.
+        if (i > 0) {
+          expect(destination.right, moreOrLessEquals(tester.getRect(find.byKey(keys[i - 1])).left));
+        }
+      }
+
+      final Rect first = tester.getRect(find.byKey(keys.first));
+      final Rect last = tester.getRect(find.byKey(keys.last));
+      expect(bar.right - first.right, moreOrLessEquals(last.left - bar.left));
+    });
+
+    testWidgets('Horizontal destinations shrink to fit a narrow navigation bar', (
+      WidgetTester tester,
+    ) async {
+      final ThemeData theme = m3eTheme();
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: theme,
+          home: Scaffold(
+            bottomNavigationBar: Center(
+              child: SizedBox(
+                width: 360,
+                child: NavigationBar(
+                  destinationLayout: NavigationDestinationLayout.horizontal,
+                  destinations: const <Widget>[
+                    NavigationDestination(icon: Icon(Icons.home), label: 'Home sweet home'),
+                    NavigationDestination(icon: Icon(Icons.search), label: 'Search everything'),
+                    NavigationDestination(icon: Icon(Icons.settings), label: 'All the settings'),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+
+      expect(tester.takeException(), isNull);
+      final Rect bar = tester.getRect(find.byType(NavigationBar));
+      for (var i = 0; i < 3; i++) {
+        final Rect destination = tester.getRect(find.byType(NavigationDestination).at(i));
+        expect(destination.left, greaterThanOrEqualTo(bar.left));
+        expect(destination.right, lessThanOrEqualTo(bar.right));
+        expect(destination.width, lessThanOrEqualTo(bar.width / 3));
+      }
+    });
+
+    testWidgets('Horizontal destinations do not crash at zero area', (WidgetTester tester) async {
+      final ThemeData theme = m3eTheme();
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: theme,
+          home: Center(
+            child: SizedBox.shrink(
+              child: NavigationBar(
+                destinationLayout: NavigationDestinationLayout.horizontal,
+                destinations: destinations,
+              ),
+            ),
+          ),
+        ),
+      );
+      expect(tester.getSize(find.byType(NavigationBar)), Size.zero);
+    });
+
+    testWidgets('Badges stay on the icon of horizontal destinations', (WidgetTester tester) async {
+      final ThemeData theme = m3eTheme(destinationLayout: NavigationDestinationLayout.horizontal);
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: theme,
+          home: Scaffold(
+            bottomNavigationBar: NavigationBar(
+              destinations: const <Widget>[
+                NavigationDestination(
+                  icon: Badge(label: Text('3'), child: Icon(Icons.mail)),
+                  label: 'Mail',
+                ),
+                NavigationDestination(icon: Icon(Icons.search), label: 'Search'),
+              ],
+            ),
+          ),
+        ),
+      );
+
+      final Rect icon = tester.getRect(find.byIcon(Icons.mail));
+      final Rect badgeLabel = tester.getRect(find.text('3'));
+      final Rect label = tester.getRect(find.text('Mail'));
+      // The badge is at the top end of the icon, and the label is next to the
+      // icon.
+      expect(badgeLabel.center.dx, greaterThan(icon.center.dx));
+      expect(badgeLabel.center.dy, lessThan(icon.center.dy));
+      expect(tester.getRect(find.byType(Badge)), icon);
+      expect(label.left, moreOrLessEquals(icon.right + 4));
+    });
+
+    testWidgets('NavigationBar.destinationLayout overrides the theme', (WidgetTester tester) async {
+      // The theme lays out the destinations horizontally.
+      ThemeData theme = m3eTheme(destinationLayout: NavigationDestinationLayout.horizontal);
+      await tester.pumpWidget(buildNavigationBar(theme: theme));
+      expect(indicatorRect(tester, 0).height, 40);
+      expect(
+        tester.getRect(find.text('Home')).left,
+        greaterThan(tester.getRect(find.byIcon(Icons.home)).right),
+      );
+
+      await tester.pumpWidget(
+        buildNavigationBar(theme: theme, destinationLayout: NavigationDestinationLayout.vertical),
+      );
+      expect(indicatorRect(tester, 0).size, const Size(56, 32));
+      expect(
+        tester.getRect(find.text('Home')).top,
+        greaterThan(tester.getRect(find.byIcon(Icons.home)).bottom),
+      );
+
+      // The theme lays out the destinations vertically.
+      theme = m3eTheme(destinationLayout: NavigationDestinationLayout.vertical);
+      await tester.pumpWidget(
+        buildNavigationBar(theme: theme, destinationLayout: NavigationDestinationLayout.horizontal),
+      );
+      await tester.pumpAndSettle();
+      expect(indicatorRect(tester, 0).height, 40);
+      expect(
+        tester.getRect(find.text('Home')).left,
+        greaterThan(tester.getRect(find.byIcon(Icons.home)).right),
+      );
+    });
+
+    testWidgets('The horizontal layout is ignored without the Material 3 Expressive style', (
+      WidgetTester tester,
+    ) async {
+      final materialThemes = <ThemeData>[
+        ThemeData(),
+        ThemeData(
+          navigationBarTheme: const NavigationBarThemeData(variant: StyleVariant.material3),
+        ),
+        // Material 2 ignores the variant.
+        ThemeData(
+          useMaterial3: false,
+          navigationBarTheme: const NavigationBarThemeData(
+            variant: StyleVariant.material3Expressive,
+          ),
+        ),
+      ];
+      for (final theme in materialThemes) {
+        await tester.pumpWidget(
+          buildNavigationBar(
+            theme: theme,
+            destinationLayout: NavigationDestinationLayout.horizontal,
+            labelBehavior: NavigationDestinationLabelBehavior.onlyShowSelected,
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        final reason = 'useMaterial3: ${theme.useMaterial3}';
+        expect(tester.getSize(find.byType(NavigationBar)).height, 80, reason: reason);
+        expect(indicatorRect(tester, 0).size, const Size(64, 32), reason: reason);
+        expect(
+          tester.getRect(find.text('Home')).top,
+          greaterThan(tester.getRect(find.byIcon(Icons.home)).bottom),
+          reason: reason,
+        );
+        // The label behavior isn't ignored.
+        expect(isLabelVisible(tester, 'Home'), isTrue, reason: reason);
+        expect(isLabelVisible(tester, 'Search'), isFalse, reason: reason);
+      }
+    });
+
+    testWidgets('A nested NavigationBarTheme without a variant keeps Material 3 Expressive', (
+      WidgetTester tester,
+    ) async {
+      final ThemeData theme = m3eTheme();
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: theme,
+          home: Scaffold(
+            bottomNavigationBar: NavigationBarTheme(
+              data: const NavigationBarThemeData(
+                destinationLayout: NavigationDestinationLayout.horizontal,
+              ),
+              child: NavigationBar(destinations: destinations),
+            ),
+          ),
+        ),
+      );
+
+      expect(tester.getSize(find.byType(NavigationBar)).height, 64);
+      expect(indicatorRect(tester, 0).height, 40);
+      expect(_getLabelStyle(tester, 'Home').color, theme.colorScheme.secondary);
+    });
+
+    testWidgets('Material 3 NavigationBar keeps the Material 3 defaults', (
+      WidgetTester tester,
+    ) async {
+      final theme = ThemeData(
+        navigationBarTheme: const NavigationBarThemeData(variant: StyleVariant.material3),
+      );
+      final ColorScheme colors = theme.colorScheme;
+      await tester.pumpWidget(buildNavigationBar(theme: theme));
+
+      final Material material = _getMaterial(tester);
+      expect(material.color, colors.surfaceContainer);
+      expect(material.elevation, 3);
+      expect(material.shadowColor, Colors.transparent);
+      expect(tester.getSize(find.byType(NavigationBar)).height, 80);
+      expect(indicatorRect(tester, 0).size, const Size(64, 32));
+      expect(_getLabelStyle(tester, 'Home').color, colors.onSurface);
+      expect(_getLabelStyle(tester, 'Search').color, colors.onSurfaceVariant);
+      expect(_getLabelPadding(tester, 'Home'), const EdgeInsets.only(top: 4));
+    });
+  });
 }
 
 Widget _buildWidget(Widget child, {bool? useMaterial3}) {
@@ -1813,6 +2476,13 @@ EdgeInsetsGeometry _getLabelPadding(WidgetTester tester, String text) {
 TextStyle _getLabelStyle(WidgetTester tester, String text) {
   return tester
       .widget<RichText>(find.descendant(of: find.text(text), matching: find.byType(RichText)))
+      .text
+      .style!;
+}
+
+TextStyle _getIconStyle(WidgetTester tester, IconData icon) {
+  return tester
+      .widget<RichText>(find.descendant(of: find.byIcon(icon), matching: find.byType(RichText)))
       .text
       .style!;
 }
