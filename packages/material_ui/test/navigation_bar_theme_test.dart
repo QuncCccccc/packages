@@ -390,7 +390,7 @@ void main() {
       destinationLayout: NavigationDestinationLayout.horizontal,
     );
 
-    final NavigationBarThemeData? start = NavigationBarThemeData.lerp(a, b, 0.25);
+    final NavigationBarThemeData? start = NavigationBarThemeData.lerp(a, b, 0.49);
     expect(start?.variant, StyleVariant.material3);
     expect(start?.destinationLayout, NavigationDestinationLayout.vertical);
 
@@ -402,7 +402,7 @@ void main() {
     expect(end?.variant, StyleVariant.material3Expressive);
     expect(end?.destinationLayout, NavigationDestinationLayout.horizontal);
 
-    expect(NavigationBarThemeData.lerp(null, b, 0.25)?.variant, isNull);
+    expect(NavigationBarThemeData.lerp(null, b, 0.49)?.variant, isNull);
     expect(NavigationBarThemeData.lerp(null, b, 0.75)?.variant, StyleVariant.material3Expressive);
   });
 

@@ -1,5 +1,5 @@
 changelog: |
-  - Adds Material 3 Expressive support for NavigationBar.
+  - Adds Material 3 Expressive support for `NavigationBar`, which apps opt into with `NavigationBarThemeData.variant`.
   - Adds `NavigationBarTheme.variantOf`, which returns the closest non-null `NavigationBarThemeData.variant`, or `StyleVariant.material3` if none is set.
-  - Adds `NavigationDestinationLayout`, `NavigationBar.destinationLayout`, and `NavigationBarThemeData.destinationLayout`, which lay out the destinations horizontally with the Material 3 Expressive style.
+  - Adds `NavigationDestinationLayout`, `NavigationBar.destinationLayout`, and `NavigationBarThemeData.destinationLayout`, which can place each label next to its icon with the Material 3 Expressive style.
 version: minor

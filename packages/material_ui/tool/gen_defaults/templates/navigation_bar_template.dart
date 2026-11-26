@@ -118,8 +118,8 @@ class $className extends NavigationBarThemeData {
   $className(this.context, NavigationDestinationLayout? destinationLayout)
     : _destinationLayout = destinationLayout,
       super(
-        height: ${number(TokenNavBar.containerHeight)},
-        elevation: ${number(TokenNavBar.containerElevation)},
+        height: ${TokenNavBar.containerHeight},
+        elevation: ${TokenNavBar.containerElevation},
         labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
       );
 
@@ -129,21 +129,21 @@ class $className extends NavigationBarThemeData {
   late final TextTheme _textTheme = Theme.of(context).textTheme;
 
   /// The space between the destinations.
-  static const double itemBetweenSpace = ${number(TokenNavBar.itemBetweenSpace)};
+  static const double itemBetweenSpace = ${TokenNavBar.itemBetweenSpace};
 
   /// The size of the indicator behind the icon when the destinations are laid
   /// out vertically.
-  static const Size verticalIndicatorSize = Size(${number(TokenNavBarItemVertical.activeIndicatorWidth)}, ${number(TokenNavBarItemVertical.activeIndicatorHeight)});
+  static const Size verticalIndicatorSize = Size(${TokenNavBarItemVertical.activeIndicatorWidth}, ${TokenNavBarItemVertical.activeIndicatorHeight});
 
   /// The height of the indicator behind the icon and the label when the
   /// destinations are laid out horizontally.
-  static const double horizontalIndicatorHeight = ${number(TokenNavBarItemHorizontal.activeIndicatorHeight)};
+  static const double horizontalIndicatorHeight = ${TokenNavBarItemHorizontal.activeIndicatorHeight};
 
   /// The space between the edges of the indicator and its icon and label when
   /// the destinations are laid out horizontally.
   static const EdgeInsetsGeometry horizontalIndicatorPadding = EdgeInsetsDirectional.only(
-    start: ${number(TokenNavBarItemHorizontal.activeIndicatorLeadingSpace)},
-    end: ${number(TokenNavBarItemHorizontal.activeIndicatorTrailingSpace)},
+    start: ${TokenNavBarItemHorizontal.activeIndicatorLeadingSpace},
+    end: ${TokenNavBarItemHorizontal.activeIndicatorTrailingSpace},
   );
 
   @override
@@ -156,6 +156,7 @@ class $className extends NavigationBarThemeData {
   @override
   Color? get shadowColor => ${color(TokenNavBar.containerShadowColor)};
 
+  // No token defines a surface tint, so there is none, as with Material 3.
   @override
   Color? get surfaceTintColor => Colors.transparent;
 
@@ -163,7 +164,7 @@ class $className extends NavigationBarThemeData {
   WidgetStateProperty<IconThemeData?>? get iconTheme {
     return WidgetStateProperty.resolveWith((Set<WidgetState> states) {
       return IconThemeData(
-        size: ${number(TokenNavBar.itemIconSize)},
+        size: ${TokenNavBar.itemIconSize},
         color: states.contains(WidgetState.disabled)
           ? ${colorWithOpacity(_legacyDisabledColor, _legacyDisabledOpacity)}
           : states.contains(WidgetState.selected)
@@ -226,8 +227,8 @@ class $className extends NavigationBarThemeData {
 
   @override
   EdgeInsetsGeometry? get labelPadding => switch (destinationLayout) {
-    NavigationDestinationLayout.vertical => const EdgeInsets.only(top: ${number(TokenNavBarItemVertical.activeIndicatorIconLabelSpace)}),
-    NavigationDestinationLayout.horizontal => const EdgeInsetsDirectional.only(start: ${number(TokenNavBarItemHorizontal.activeIndicatorIconLabelSpace)}),
+    NavigationDestinationLayout.vertical => const EdgeInsets.only(top: ${TokenNavBarItemVertical.activeIndicatorIconLabelSpace}),
+    NavigationDestinationLayout.horizontal => const EdgeInsetsDirectional.only(start: ${TokenNavBarItemHorizontal.activeIndicatorIconLabelSpace}),
   };
 }
 ''';

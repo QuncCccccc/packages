@@ -49,6 +49,7 @@ class _NavigationBarDefaultsM3E extends NavigationBarThemeData {
   @override
   Color? get shadowColor => _colors.shadow;
 
+  // No token defines a surface tint, so there is none, as with Material 3.
   @override
   Color? get surfaceTintColor => Colors.transparent;
 

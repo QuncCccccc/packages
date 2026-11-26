@@ -1940,14 +1940,17 @@ void main() {
         await tester.pumpAndSettle();
       }
 
-      // Press tab to focus the first destination.
-      await tester.sendKeyEvent(LogicalKeyboardKey.tab);
-      await tester.pumpAndSettle();
-      expect(
-        inkFeatures(tester),
-        paints..circle(color: stateLayerColor.withValues(alpha: 0.1)),
-        reason: 'Focused destination',
-      );
+      // Press tab to focus the first destination, which is selected, and then
+      // the second one, which isn't.
+      for (final index in <int>[0, 1]) {
+        await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+        await tester.pumpAndSettle();
+        expect(
+          inkFeatures(tester),
+          paints..circle(color: stateLayerColor.withValues(alpha: 0.1)),
+          reason: 'Focused destination $index',
+        );
+      }
     });
 
     testWidgets('The overlay color of the selected destination is resolved with selected', (
@@ -2424,6 +2427,275 @@ void main() {
       expect(_getLabelStyle(tester, 'Home').color, colors.onSurface);
       expect(_getLabelStyle(tester, 'Search').color, colors.onSurfaceVariant);
       expect(_getLabelPadding(tester, 'Home'), const EdgeInsets.only(top: 4));
+    });
+
+    testWidgets('Switching the destination layout keeps the state and focus', (
+      WidgetTester tester,
+    ) async {
+      tester.binding.focusManager.highlightStrategy = FocusHighlightStrategy.alwaysTraditional;
+      final ThemeData theme = m3eTheme();
+
+      bool isHomeFocused() {
+        final BuildContext? focused = FocusManager.instance.primaryFocus?.context;
+        if (focused == null) {
+          return false;
+        }
+        return find
+            .descendant(
+              of: find.byKey(homeKey),
+              matching: find.byElementPredicate((Element element) => element == focused),
+            )
+            .evaluate()
+            .isNotEmpty;
+      }
+
+      await tester.pumpWidget(buildNavigationBar(theme: theme));
+      // Press tab to focus the first destination.
+      await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+      await tester.pumpAndSettle();
+      final Element destination = tester.element(find.byKey(homeKey));
+      final FocusNode? focusedNode = FocusManager.instance.primaryFocus;
+      expect(isHomeFocused(), isTrue, reason: 'vertical');
+
+      await tester.pumpWidget(
+        buildNavigationBar(theme: theme, destinationLayout: NavigationDestinationLayout.horizontal),
+      );
+      await tester.pumpAndSettle();
+      expect(tester.element(find.byKey(homeKey)), same(destination));
+      expect(FocusManager.instance.primaryFocus, same(focusedNode));
+      expect(isHomeFocused(), isTrue, reason: 'vertical -> horizontal');
+      // The focus highlight follows the new layout and fills the indicator.
+      final Offset barOrigin = tester.getTopLeft(find.byType(NavigationBar));
+      expect(
+        inkFeatures(tester),
+        paints..rect(
+          rect: indicatorRect(tester, 0).shift(-barOrigin),
+          color: theme.colorScheme.onSecondaryContainer.withValues(alpha: 0.1),
+        ),
+      );
+
+      await tester.pumpWidget(
+        buildNavigationBar(theme: theme, destinationLayout: NavigationDestinationLayout.vertical),
+      );
+      await tester.pumpAndSettle();
+      expect(tester.element(find.byKey(homeKey)), same(destination));
+      expect(FocusManager.instance.primaryFocus, same(focusedNode));
+      expect(isHomeFocused(), isTrue, reason: 'horizontal -> vertical');
+    });
+
+    testWidgets('The selection animation continues when the layout changes', (
+      WidgetTester tester,
+    ) async {
+      double indicatorScale(int index) {
+        final Transform transform = tester.widget<Transform>(
+          find.descendant(
+            of: find.byType(NavigationIndicator).at(index),
+            matching: find.byType(Transform),
+          ),
+        );
+        return transform.transform.storage[0];
+      }
+
+      final ThemeData theme = m3eTheme();
+      await tester.pumpWidget(buildNavigationBar(theme: theme));
+      await tester.pumpWidget(buildNavigationBar(theme: theme, selectedIndex: 1));
+      await tester.pump(const Duration(milliseconds: 100));
+      final double scale = indicatorScale(1);
+      expect(scale, lessThan(1.0));
+
+      await tester.pumpWidget(
+        buildNavigationBar(
+          theme: theme,
+          selectedIndex: 1,
+          destinationLayout: NavigationDestinationLayout.horizontal,
+        ),
+      );
+      expect(indicatorScale(1), moreOrLessEquals(scale));
+    });
+
+    testWidgets('Only the selected horizontal destination shows its indicator', (
+      WidgetTester tester,
+    ) async {
+      final ThemeData theme = m3eTheme(destinationLayout: NavigationDestinationLayout.horizontal);
+      final ColorScheme colors = theme.colorScheme;
+
+      // The horizontal scale of the indicator of the destination at the given
+      // index.
+      double indicatorScale(int index) {
+        final Finder transform = find.descendant(
+          of: find.byType(NavigationIndicator).at(index),
+          matching: find.byType(Transform),
+        );
+        return tester.widget<Transform>(transform.first).transform.getColumn(0)[0];
+      }
+
+      await tester.pumpWidget(buildNavigationBar(theme: theme));
+      expect(indicatorScale(0), 1.0);
+      expect(indicatorScale(1), 0.0);
+
+      await tester.pumpWidget(buildNavigationBar(theme: theme, selectedIndex: 1));
+      await tester.pumpAndSettle();
+      expect(indicatorScale(0), 0.0);
+      expect(indicatorScale(1), 1.0);
+      expect(find.byIcon(Icons.home_outlined), findsOneWidget);
+      expect(_getIconStyle(tester, Icons.search).color, colors.onSecondaryContainer);
+      expect(_getLabelStyle(tester, 'Home').color, colors.onSurfaceVariant);
+      expect(_getLabelStyle(tester, 'Search').color, colors.secondary);
+    });
+
+    testWidgets('Horizontal destinations have the same semantics as vertical destinations', (
+      WidgetTester tester,
+    ) async {
+      final ThemeData theme = m3eTheme();
+      for (final NavigationDestinationLayout layout in NavigationDestinationLayout.values) {
+        await tester.pumpWidget(buildNavigationBar(theme: theme, destinationLayout: layout));
+        await tester.pumpAndSettle();
+
+        expect(
+          tester.getSemantics(find.text('Home')),
+          matchesSemantics(
+            label: 'Home${kIsWeb ? '' : '\nTab 1 of 3'}',
+            textDirection: TextDirection.ltr,
+            isFocusable: true,
+            isSelected: true,
+            isButton: true,
+            hasSelectedState: true,
+            hasEnabledState: true,
+            isEnabled: true,
+            hasTapAction: true,
+            hasFocusAction: true,
+          ),
+          reason: '$layout',
+        );
+        expect(
+          tester.getSemantics(find.text('Search')),
+          matchesSemantics(
+            label: 'Search${kIsWeb ? '' : '\nTab 2 of 3'}',
+            textDirection: TextDirection.ltr,
+            isFocusable: true,
+            isButton: true,
+            hasSelectedState: true,
+            hasEnabledState: true,
+            isEnabled: true,
+            hasTapAction: true,
+            hasFocusAction: true,
+          ),
+          reason: '$layout',
+        );
+        // The last destination is disabled.
+        expect(
+          tester.getSemantics(find.text('Settings')),
+          matchesSemantics(
+            label: 'Settings${kIsWeb ? '' : '\nTab 3 of 3'}',
+            textDirection: TextDirection.ltr,
+            isButton: true,
+            hasSelectedState: true,
+            hasEnabledState: true,
+          ),
+          reason: '$layout',
+        );
+      }
+    });
+
+    testWidgets('Horizontal destinations clamp the label text scale factor', (
+      WidgetTester tester,
+    ) async {
+      final ThemeData theme = m3eTheme(destinationLayout: NavigationDestinationLayout.horizontal);
+      Widget buildApp(TextScaler textScaler) {
+        return MaterialApp(
+          theme: theme,
+          home: MediaQuery(
+            data: MediaQueryData(textScaler: textScaler),
+            child: Scaffold(bottomNavigationBar: NavigationBar(destinations: destinations)),
+          ),
+        );
+      }
+
+      await tester.pumpWidget(buildApp(TextScaler.noScaling));
+      final Size labelSize = tester.getSize(find.text('Home'));
+
+      await tester.pumpWidget(buildApp(const TextScaler.linear(1.3)));
+      final Size maxLabelSize = tester.getSize(find.text('Home'));
+      expect(maxLabelSize.height, greaterThan(labelSize.height));
+
+      // The label doesn't scale beyond 1.3 times, and the navigation bar and the
+      // indicator keep their heights.
+      await tester.pumpWidget(buildApp(const TextScaler.linear(4)));
+      expect(tester.getSize(find.text('Home')), maxLabelSize);
+      expect(tester.getSize(find.byType(NavigationBar)).height, 64);
+      expect(indicatorRect(tester, 0).height, 40);
+      expect(
+        tester.getRect(find.text('Home')).left,
+        moreOrLessEquals(tester.getRect(find.byIcon(Icons.home)).right + 4),
+      );
+    });
+
+    testWidgets('Vertical destinations support right-to-left', (WidgetTester tester) async {
+      final ThemeData theme = m3eTheme();
+      await tester.pumpWidget(buildNavigationBar(theme: theme, textDirection: TextDirection.rtl));
+
+      final Rect bar = tester.getRect(find.byType(NavigationBar));
+      final double width = bar.width / destinations.length;
+      for (var i = 0; i < destinations.length; i++) {
+        final Rect destination = tester.getRect(find.byKey(keys[i]));
+        // The first destination is on the right.
+        expect(destination.right, moreOrLessEquals(bar.right - i * width));
+        expect(indicatorRect(tester, i).center.dx, moreOrLessEquals(destination.center.dx));
+        expect(
+          tester.getRect(find.text(labels[i])).center.dx,
+          moreOrLessEquals(destination.center.dx),
+        );
+      }
+    });
+
+    testWidgets('Switching the layout at runtime updates the destinations', (
+      WidgetTester tester,
+    ) async {
+      final ThemeData theme = m3eTheme();
+      Future<void> pumpLayout(NavigationDestinationLayout layout) async {
+        await tester.pumpWidget(
+          buildNavigationBar(
+            theme: theme,
+            destinationLayout: layout,
+            labelBehavior: NavigationDestinationLabelBehavior.onlyShowSelected,
+          ),
+        );
+        await tester.pumpAndSettle();
+      }
+
+      await pumpLayout(NavigationDestinationLayout.vertical);
+      expect(isLabelVisible(tester, 'Search'), isFalse);
+
+      await pumpLayout(NavigationDestinationLayout.horizontal);
+      expect(isLabelVisible(tester, 'Search'), isTrue);
+      expect(indicatorRect(tester, 1).height, 40);
+      expect(
+        tester.getRect(find.text('Search')).left,
+        moreOrLessEquals(tester.getRect(find.byIcon(Icons.search)).right + 4),
+      );
+
+      await pumpLayout(NavigationDestinationLayout.vertical);
+      expect(isLabelVisible(tester, 'Home'), isTrue);
+      expect(isLabelVisible(tester, 'Search'), isFalse);
+      expect(indicatorRect(tester, 1).size, const Size(56, 32));
+    });
+
+    testWidgets('A disabled horizontal destination has no hover highlight', (
+      WidgetTester tester,
+    ) async {
+      final ThemeData theme = m3eTheme(destinationLayout: NavigationDestinationLayout.horizontal);
+      await tester.pumpWidget(buildNavigationBar(theme: theme));
+
+      final TestGesture gesture = await tester.createGesture(kind: PointerDeviceKind.mouse);
+      addTearDown(gesture.removePointer);
+      await gesture.addPointer(location: tester.getCenter(find.text('Settings')));
+      await tester.pumpAndSettle();
+      expect(inkFeatures(tester), paintsExactlyCountTimes(#drawRect, 0));
+
+      // The same gesture over an enabled destination paints the highlight.
+      await gesture.moveTo(tester.getCenter(find.text('Search')));
+      await tester.pumpAndSettle();
+      expect(inkFeatures(tester), paintsExactlyCountTimes(#drawRect, 1));
     });
   });
 }

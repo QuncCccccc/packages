@@ -62,9 +62,9 @@ const double _kMaxLabelTextScaleFactor = 1.3;
 /// to [StyleVariant.material3Expressive]. With the Material 3 Expressive style,
 /// that is, when [ThemeData.useMaterial3] is true and
 /// [NavigationBarThemeData.variant] is [StyleVariant.material3Expressive], the
-/// navigation bar is 64 pixels tall, and the destinations can be laid out
-/// horizontally, with each label next to its icon, by setting
-/// [destinationLayout] to [NavigationDestinationLayout.horizontal].
+/// navigation bar is 64 pixels tall by default, and the destinations can be
+/// laid out horizontally, with each label next to its icon. See
+/// [destinationLayout].
 ///
 /// <callout-box>
 ///
@@ -358,6 +358,8 @@ class NavigationBar extends StatelessWidget {
 
     final NavigationBarThemeData navigationBarTheme = NavigationBarTheme.of(context);
     final double effectiveHeight = height ?? navigationBarTheme.height ?? defaults.height!;
+    final NavigationDestinationLabelBehavior effectiveLabelBehavior =
+        labelBehavior ?? navigationBarTheme.labelBehavior ?? defaults.labelBehavior!;
     final isExpressive = defaults is _NavigationBarDefaultsM3E;
     // The horizontal layout is only available with the Material 3 Expressive
     // style.
@@ -365,41 +367,6 @@ class NavigationBar extends StatelessWidget {
         ? destinationLayout ?? navigationBarTheme.destinationLayout ?? defaults.destinationLayout
         : NavigationDestinationLayout.vertical;
     final isHorizontal = effectiveDestinationLayout == NavigationDestinationLayout.horizontal;
-    // The labels are always shown when the destinations are laid out
-    // horizontally.
-    final NavigationDestinationLabelBehavior effectiveLabelBehavior = isHorizontal
-        ? NavigationDestinationLabelBehavior.alwaysShow
-        : labelBehavior ?? navigationBarTheme.labelBehavior ?? defaults.labelBehavior!;
-
-    Widget buildDestination(int index) {
-      return MergeSemantics(
-        child: Semantics(
-          role: SemanticsRole.tab,
-          selected: index == selectedIndex,
-          child: _SelectableAnimatedBuilder(
-            duration: animationDuration ?? const Duration(milliseconds: 500),
-            isSelected: index == selectedIndex,
-            builder: (BuildContext context, Animation<double> animation) {
-              return _NavigationDestinationInfo(
-                index: index,
-                selectedIndex: selectedIndex,
-                totalNumberOfDestinations: destinations.length,
-                selectedAnimation: animation,
-                labelBehavior: effectiveLabelBehavior,
-                destinationLayout: effectiveDestinationLayout,
-                indicatorColor: indicatorColor,
-                indicatorShape: indicatorShape,
-                overlayColor: overlayColor,
-                onTap: _handleTap(index),
-                labelTextStyle: labelTextStyle,
-                labelPadding: labelPadding,
-                child: destinations[index],
-              );
-            },
-          ),
-        ),
-      );
-    }
 
     return Material(
       color: backgroundColor ?? navigationBarTheme.backgroundColor ?? defaults.backgroundColor!,
@@ -422,10 +389,39 @@ class NavigationBar extends StatelessWidget {
               spacing: isExpressive ? _NavigationBarDefaultsM3E.itemBetweenSpace : 0.0,
               children: <Widget>[
                 for (int i = 0; i < destinations.length; i++)
-                  if (isHorizontal)
-                    Flexible(child: buildDestination(i))
-                  else
-                    Expanded(child: buildDestination(i)),
+                  // Both layouts use a Flexible, so the destinations keep their
+                  // state, such as the focus and running animations, when the
+                  // layout changes.
+                  Flexible(
+                    fit: isHorizontal ? FlexFit.loose : FlexFit.tight,
+                    child: MergeSemantics(
+                      child: Semantics(
+                        role: SemanticsRole.tab,
+                        selected: i == selectedIndex,
+                        child: _SelectableAnimatedBuilder(
+                          duration: animationDuration ?? const Duration(milliseconds: 500),
+                          isSelected: i == selectedIndex,
+                          builder: (BuildContext context, Animation<double> animation) {
+                            return _NavigationDestinationInfo(
+                              index: i,
+                              selectedIndex: selectedIndex,
+                              totalNumberOfDestinations: destinations.length,
+                              selectedAnimation: animation,
+                              labelBehavior: effectiveLabelBehavior,
+                              destinationLayout: effectiveDestinationLayout,
+                              indicatorColor: indicatorColor,
+                              indicatorShape: indicatorShape,
+                              overlayColor: overlayColor,
+                              onTap: _handleTap(i),
+                              labelTextStyle: labelTextStyle,
+                              labelPadding: labelPadding,
+                              child: destinations[i],
+                            );
+                          },
+                        ),
+                      ),
+                    ),
+                  ),
               ],
             ),
           ),
@@ -462,8 +458,8 @@ enum NavigationDestinationLabelBehavior {
 ///
 /// See also:
 ///
-///  * [NavigationBar.destinationLayout], which describes how the destinations
-///    are laid out in each layout.
+///  * [NavigationBar.destinationLayout], which describes each layout in more
+///    detail.
 enum NavigationDestinationLayout {
   /// Each label is below its icon, and the destinations share the width of
   /// the navigation bar equally.
@@ -520,7 +516,7 @@ class NavigationDestination extends StatelessWidget {
   /// would use a size of 24.0 and [ColorScheme.onSurface].
   final Widget? selectedIcon;
 
-  /// The text label that appears below the icon of this
+  /// The text label that appears below or next to the icon of this
   /// [NavigationDestination].
   ///
   /// The accompanying [Text] widget will use [NavigationBarThemeData.labelTextStyle].
@@ -959,11 +955,12 @@ class _NavigationDestinationInfo extends InheritedWidget {
 /// When [animation] is 0, the indicator is not present. As [animation] grows
 /// from 0 to 1, the indicator scales in on the x axis.
 ///
-/// Used in a [Stack] widget behind the icons in the Material 3 Navigation Bar
-/// to illuminate the selected destination.
+/// Used in a [Stack] widget behind the icon (or behind the icon and label
+/// when laid out horizontally) in the Material 3 Navigation Bar to illuminate
+/// the selected destination.
 class NavigationIndicator extends StatelessWidget {
-  /// Builds an indicator, usually used in a stack behind the icon of a
-  /// navigation bar destination.
+  /// Builds an indicator, usually used in a stack behind the icon (or icon and
+  /// label) of a navigation bar destination.
   const NavigationIndicator({
     super.key,
     required this.animation,
@@ -1163,28 +1160,26 @@ class _NavigationBarHorizontalDestinationLayout extends StatelessWidget {
     return Align(
       // Size the destination to its content, and center it vertically.
       widthFactor: 1.0,
-      child: KeyedSubtree(
+      child: ConstrainedBox(
         key: indicatorKey,
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(
-            minHeight: _NavigationBarDefaultsM3E.horizontalIndicatorHeight,
-          ),
-          child: Stack(
-            alignment: Alignment.center,
-            children: <Widget>[
-              Positioned.fill(child: indicator),
-              Padding(
-                padding: _NavigationBarDefaultsM3E.horizontalIndicatorPadding,
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: <Widget>[
-                    icon,
-                    Flexible(child: label),
-                  ],
-                ),
+        constraints: const BoxConstraints(
+          minHeight: _NavigationBarDefaultsM3E.horizontalIndicatorHeight,
+        ),
+        child: Stack(
+          alignment: Alignment.center,
+          children: <Widget>[
+            Positioned.fill(child: indicator),
+            Padding(
+              padding: _NavigationBarDefaultsM3E.horizontalIndicatorPadding,
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  icon,
+                  Flexible(child: label),
+                ],
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
